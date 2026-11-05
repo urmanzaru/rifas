@@ -61,9 +61,26 @@ Fijo al pie. Muestra tus números (tocables para quitarlos), tu probabilidad ("1
 "1 en 1,000" en grande. Es nuestro diferenciador más defendible y nadie más lo dice.
 
 ### 7. Apartado → pago en tres pasos
-Después de apartar: folio con sello y hora, cuenta regresiva de 2 h, y tres pasos numerados (transferir por SPEI → mandar comprobante por WhatsApp → te confirmamos). El mensaje de WhatsApp ya va escrito con folio, números, total y nombre. El cliente no teclea nada.
+Después de apartar: folio con sello y hora, cuenta regresiva de 2 h, y tres pasos numerados (transferir por SPEI → mandar comprobante por WhatsApp → te confirmamos). El mensaje de WhatsApp ya va escrito con folio, números, total, nombre y el link al apartado. El cliente no teclea nada.
 
-### 8. Gestión con el mismo papel
+### 8. El apartado no se pierde
+Para pagar, el comprador sale a la app de su banco, y el navegador de Facebook muchas veces recarga la página al volver. Por eso:
+
+- El apartado se guarda en el teléfono (`localStorage`) y tiene su propio link con el folio (`#SM1-0214` en el prototipo; en producción, `/apartado/SM1-0214` consultado al servidor). Ese link va en el mensaje de WhatsApp, así el chat mismo guarda el comprobante.
+- Mientras exista, el talón muestra **tu apartado** arriba de todo, con el folio y lo que corresponda a su estado:
+
+| Estado | Qué dice el talón | Botón |
+| --- | --- | --- |
+| Apartado | "Paga antes de 1:52:10" | Ver cómo pagar |
+| Ya transferí | "Revisando tu pago" y el tiempo para mandar comprobante | Ver datos |
+| Pagado | "Ya son tuyos" con los números | Ver boleto |
+| Vencido / cancelado | "Los números se liberaron" | Quitar aviso |
+
+- El botón final de la hoja ya no dice "Listo" (sonaba a que todo había terminado). Ahora son "Ya transferí" y "Cerrar", con la nota de que el apartado queda guardado.
+- Al cerrar, el foco del teclado regresa al botón del talón.
+- Si el navegador bloquea el almacenamiento, todo sigue funcionando mientras la página esté abierta.
+
+### 9. Gestión con el mismo papel
 La vista de conciliación es una lista de folios **ordenada por lo que vence primero**, con borde rojo cuando faltan menos de 20 min, y dos botones: "Ya pagó" y "Liberar". Debajo, el **registro**: cada movimiento con hora, que no se edita ni se borra.
 
 ---

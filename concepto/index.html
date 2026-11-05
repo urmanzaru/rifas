@@ -301,6 +301,20 @@ p { margin: 0; }
 }
 .mis button span { font-family: var(--f-texto); font-weight: 400; font-size: .8rem; opacity: .8; margin-left: 4px; }
 .talon .btn.sello { white-space: nowrap; }
+.mi-apartado {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 4px 0 10px; border-bottom: 1px dashed color-mix(in srgb, var(--sobre-tinta) 35%, transparent);
+}
+.mi-apartado.solo { border-bottom: 0; padding-bottom: 0; }
+.ma-txt { min-width: 0; display: grid; gap: 1px; font-size: .875rem; line-height: 1.3; }
+.ma-estado { font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; opacity: .8; }
+.ma-linea { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; }
+.ma-folio { font-family: var(--f-folio); font-weight: 700; }
+.ma-reloj { font-family: var(--f-display); font-weight: 900; font-size: 1.4rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.mi-apartado .btn { background: var(--sobre-tinta); color: var(--tinta); white-space: nowrap; min-height: 44px; }
+.mi-apartado[data-estado="vencido"] .ma-reloj { text-decoration: line-through; opacity: .7; }
+.cierre { display: flex; flex-wrap: wrap; gap: 8px; }
+.cierre .btn { flex: 1 1 auto; }
 .talon .btn:disabled { opacity: .5; }
 
 .toast {
@@ -548,8 +562,15 @@ p { margin: 0; }
 
         <div class="talon" id="talon">
           <div class="toast" id="toast" role="status" hidden></div>
+          <div class="mi-apartado" id="mi-apartado" hidden>
+            <div class="ma-txt">
+              <span class="ma-estado" id="ma-estado"></span>
+              <span class="ma-linea"><span class="ma-folio" id="ma-folio"></span><span id="ma-detalle"></span></span>
+            </div>
+            <button type="button" class="btn chico" id="ma-btn">Ver cómo pagar</button>
+          </div>
           <div class="mis" id="mis" aria-label="Tus números"></div>
-          <div class="talon-fila">
+          <div class="talon-fila" id="talon-fila">
             <p class="msg" id="talon-msg"></p>
             <button type="button" class="btn sello" id="btn-apartar" disabled>Apartar</button>
           </div>
@@ -656,7 +677,7 @@ p { margin: 0; }
 
     <div id="paso-listo" hidden>
       <div style="display:grid;gap:16px">
-        <h2>Apartado. Ahora paga.</h2>
+        <h2 id="c-titulo">Apartado. Ahora paga.</h2>
         <div class="comprobante">
           <p class="eyebrow">Tu folio</p>
           <p class="folio" id="c-folio"></p>
@@ -664,12 +685,12 @@ p { margin: 0; }
           <p class="num"><b id="c-total"></b></p>
           <div class="sello-goma" aria-hidden="true">Apartado<small id="c-hora"></small></div>
         </div>
-        <div>
+        <div id="c-tiempo">
           <p class="eyebrow">Tienes para pagar</p>
           <p class="reloj num" id="c-reloj" aria-live="off">2:00:00</p>
           <p class="aviso">Si no pagas a tiempo, tus números se liberan solos para que alguien más los aparte.</p>
         </div>
-        <ol class="pasos">
+        <ol class="pasos" id="c-pasos">
           <li><div>
             <b>Transfiere por SPEI</b>
             <div class="dato"><code id="c-clabe">0123 4567 8901 2345 67</code><button type="button" class="btn linea chico" data-copiar="c-clabe">Copiar CLABE</button></div>
@@ -686,7 +707,11 @@ p { margin: 0; }
             <span class="pista">Lo puedes ver en la cuadrícula. Cualquiera lo puede ver.</span>
           </div></li>
         </ol>
-        <button type="button" class="btn linea" id="btn-cerrar">Listo</button>
+        <div class="cierre">
+          <button type="button" class="btn" id="btn-transferi">Ya transferí</button>
+          <button type="button" class="btn linea" id="btn-cerrar">Cerrar</button>
+        </div>
+        <p class="aviso">Tu apartado queda guardado en este teléfono y en el link de tu mensaje. Lo ves abajo, en el talón, hasta que se confirme tu pago.</p>
       </div>
     </div>
   </div>
@@ -722,6 +747,26 @@ p { margin: 0; }
     { t: ahora - 26 * 60000, txt: 'SM1-0187 · vencido · 2 liberados', tipo: 'lib' },
     { t: ahora - 41 * 60000, txt: 'SM1-0196 · pagado · $25', tipo: 'pago' },
   ];
+
+  // ---------- Mis apartados (guardados en este teléfono) ----------
+  // estado: apartado | transferido | pagado | vencido | liberado
+  const LS = 'solomil.rifa1.apartados';
+  const leerApartados = () => { try { const v = JSON.parse(localStorage.getItem(LS)); return Array.isArray(v) ? v : []; } catch { return []; } };
+  const guardarApartados = () => { try { localStorage.setItem(LS, JSON.stringify(folios.filter(f => f.propio))); } catch { /* sin almacenamiento: sigue funcionando en memoria */ } };
+  const PENDIENTE = (f) => f.estado === 'apartado' || f.estado === 'transferido';
+  leerApartados().forEach(ap => {
+    if (!ap || !ap.folio || !Array.isArray(ap.nums)) return;
+    ap.propio = true;
+    if (PENDIENTE(ap) && ap.vence <= Date.now()) ap.estado = 'vencido';
+    if (PENDIENTE(ap)) ap.nums.forEach(n => { estado[n] = 'apartado'; });
+    if (ap.estado === 'pagado') ap.nums.forEach(n => { estado[n] = 'vendido'; });
+    const num = parseInt(ap.folio.split('-')[1], 10);
+    if (num >= siguienteFolio) siguienteFolio = num + 1;
+    folios.push(ap);
+  });
+  const misApartados = () => folios.filter(f => f.propio && f.estado !== 'descartado');
+  const linkDe = (folio) => location.href.split('#')[0] + '#' + folio;
+  const reloj = (ms) => { const s = Math.max(0, Math.round(ms / 1000)); return `${Math.floor(s / 3600)}:${String(Math.floor(s % 3600 / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`; };
 
   const tuyos = new Set();
   let centena = 4;
@@ -889,7 +934,43 @@ p { margin: 0; }
     btn.disabled = !k;
     btn.textContent = k ? `Apartar · ${pesos(k * CFG.precio)}` : 'Apartar';
     document.querySelectorAll('#escalera li').forEach(li => li.classList.toggle('logrado', k >= +li.dataset.min));
+    renderMiApartado();
+    $('talon-fila').hidden = !k && !$('mi-apartado').hidden;
+    $('mi-apartado').classList.toggle('solo', $('talon-fila').hidden);
   }
+
+  // El apartado más reciente que sigue importando al comprador
+  function apartadoVisible() {
+    const mios = misApartados();
+    return mios.filter(PENDIENTE).sort((a, b) => a.vence - b.vence)[0] || mios[mios.length - 1] || null;
+  }
+  function renderMiApartado() {
+    const ap = apartadoVisible(), box = $('mi-apartado');
+    box.hidden = !ap;
+    if (!ap) return;
+    const resto = ap.vence - Date.now();
+    const nums = ap.nums.map(pad).join(', ');
+    const T = {
+      apartado:    ['Apartado · paga antes de', `<span class="ma-reloj num">${reloj(resto)}</span>`, 'Ver cómo pagar'],
+      transferido: ['Revisando tu pago', `<span>Si no mandaste el comprobante, mándalo antes de <b class="num">${reloj(resto)}</b></span>`, 'Ver datos'],
+      pagado:      ['Pagado · ya son tuyos', `<span class="num">${nums}</span>`, 'Ver boleto'],
+      vencido:     ['Venció sin pago', `<span>Los números ${nums} se liberaron.</span>`, 'Quitar aviso'],
+      liberado:    ['Apartado cancelado', `<span>Los números ${nums} se liberaron.</span>`, 'Quitar aviso'],
+    }[ap.estado];
+    box.dataset.estado = ap.estado;
+    $('ma-estado').textContent = T[0];
+    $('ma-folio').textContent = ap.folio;
+    $('ma-detalle').innerHTML = T[1];
+    $('ma-btn').textContent = T[2];
+    $('ma-btn').dataset.folio = ap.folio;
+  }
+  $('ma-btn').addEventListener('click', () => {
+    const ap = folios.find(f => f.folio === $('ma-btn').dataset.folio);
+    if (!ap) return;
+    if (ap.estado === 'vencido' || ap.estado === 'liberado') { ap.estado = 'descartado'; guardarApartados(); render(); return; }
+    focoPrevio = $('ma-btn');
+    abrirComprobante(ap);
+  });
   $('mis').addEventListener('click', (e) => { const b = e.target.closest('[data-quitar]'); if (b) { tuyos.delete(+b.dataset.quitar); render(); } });
 
   // ---------- Hoja de apartado ----------
@@ -901,7 +982,11 @@ p { margin: 0; }
     $('paso-datos').hidden = false; $('paso-listo').hidden = true; $('form-error').hidden = true;
     $('velo').hidden = false; $('in-nombre').focus();
   });
-  const cerrar = () => { $('velo').hidden = true; if (focoPrevio) focoPrevio.focus(); };
+  const cerrar = () => {
+    $('velo').hidden = true;
+    const destino = !$('mi-apartado').hidden ? $('ma-btn') : focoPrevio;
+    if (destino && !destino.disabled) destino.focus();
+  };
   $('btn-cancelar').addEventListener('click', cerrar);
   $('btn-cerrar').addEventListener('click', cerrar);
   $('velo').addEventListener('click', (e) => { if (e.target.id === 'velo') cerrar(); });
@@ -915,20 +1000,42 @@ p { margin: 0; }
     if (wa.length !== 10) { err.textContent = `El WhatsApp lleva 10 dígitos y escribiste ${wa.length}.`; err.hidden = false; $('in-wa').focus(); return; }
     const nums = [...tuyos].sort((a, b) => a - b);
     nums.forEach(n => { estado[n] = 'apartado'; });
-    ultimo = { folio: CFG.prefijo + '-' + String(siguienteFolio++).padStart(4, '0'), nombre, nums, vence: Date.now() + CFG.minutos * 60000, estado: 'apartado', propio: true };
-    folios.push(ultimo);
-    bitacora.unshift({ t: Date.now(), txt: `${ultimo.folio} · apartado · ${nums.length} boletos`, tipo: 'ap' });
+    const ap = { folio: CFG.prefijo + '-' + String(siguienteFolio++).padStart(4, '0'), nombre, wa, nums, creado: Date.now(), vence: Date.now() + CFG.minutos * 60000, estado: 'apartado', propio: true };
+    folios.push(ap);
+    guardarApartados();
+    bitacora.unshift({ t: Date.now(), txt: `${ap.folio} · apartado · ${nums.length} boletos`, tipo: 'ap' });
     tuyos.clear();
-    const total = pesos(nums.length * CFG.precio);
-    const hora = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
-    $('c-folio').textContent = ultimo.folio; $('c-folio2').textContent = ultimo.folio;
-    $('c-nums').innerHTML = nums.map(n => `<span class="n">${pad(n)}</span>`).join('');
-    $('c-total').textContent = `${nums.length} ${nums.length === 1 ? 'boleto' : 'boletos'} · ${total}`;
-    $('c-hora').textContent = hora;
-    $('c-mensaje').textContent = `Hola, aparté en Solo Mil, rifa #1.\nFolio: ${ultimo.folio}\nNúmeros: ${nums.map(pad).join(', ')}\nTotal: ${total}\nA nombre de: ${nombre}\nAquí va mi comprobante:`;
+    try { location.hash = ap.folio; } catch { /* el link sigue en el mensaje */ }
+    render();
+    abrirComprobante(ap);
+  });
+
+  // Hoja de comprobante: se puede volver a abrir desde el talón o desde el link con el folio
+  function abrirComprobante(ap) {
+    ultimo = ap;
+    const total = pesos(ap.nums.length * CFG.precio);
+    const pendiente = PENDIENTE(ap);
+    $('c-titulo').textContent = { apartado: 'Apartado. Ahora paga.', transferido: 'Revisando tu pago.', pagado: 'Pagado. Ya son tuyos.', vencido: 'Este apartado venció.', liberado: 'Este apartado se canceló.' }[ap.estado] || 'Tu apartado';
+    $('c-folio').textContent = ap.folio; $('c-folio2').textContent = ap.folio;
+    $('c-nums').innerHTML = ap.nums.map(n => `<span class="n">${pad(n)}</span>`).join('');
+    $('c-total').textContent = `${ap.nums.length} ${ap.nums.length === 1 ? 'boleto' : 'boletos'} · ${total}`;
+    $('c-hora').textContent = new Date(ap.creado || Date.now()).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+    $('c-mensaje').textContent = `Hola, aparté en Solo Mil, rifa #1.\nFolio: ${ap.folio}\nNúmeros: ${ap.nums.map(pad).join(', ')}\nTotal: ${total}\nA nombre de: ${ap.nombre}\nMi apartado: ${linkDe(ap.folio)}\nAquí va mi comprobante:`;
+    $('c-tiempo').hidden = !pendiente;
+    $('c-pasos').hidden = !pendiente;
+    $('btn-transferi').hidden = ap.estado !== 'apartado';
     $('paso-datos').hidden = true; $('paso-listo').hidden = false;
-    tic(); render();
+    $('velo').hidden = false;
+    tic();
     $('hoja').scrollTop = 0;
+    $('c-titulo').setAttribute('tabindex', '-1'); $('c-titulo').focus();
+  }
+  $('btn-transferi').addEventListener('click', () => {
+    if (ultimo && ultimo.estado === 'apartado') {
+      ultimo.estado = 'transferido'; guardarApartados();
+      bitacora.unshift({ t: Date.now(), txt: `${ultimo.folio} · cliente dice que ya transfirió`, tipo: 'ap' });
+    }
+    cerrar(); render();
   });
 
   async function copiar(texto, btn, ok) {
@@ -948,13 +1055,13 @@ p { margin: 0; }
       `<div class="cifra"><b>${a}</b><span>apartados · ${pesos(a * CFG.precio)} por cobrar</span></div>` +
       `<div class="cifra"><b>${N - v - a}</b><span>libres</span></div>` +
       `<div class="cifra ${falta <= 0 ? 'ok' : ''}"><b>${falta <= 0 ? '+' + (-falta) : falta}</b><span>${falta <= 0 ? 'sobre el punto de equilibrio (480)' : 'para el punto de equilibrio (480)'}</span></div>`;
-    const pend = folios.filter(f => f.estado === 'apartado').sort((x, y) => x.vence - y.vence);
+    const pend = folios.filter(PENDIENTE).sort((x, y) => x.vence - y.vence);
     $('por-conciliar').innerHTML = pend.map(f => {
       const min = Math.max(0, Math.round((f.vence - hoy) / 60000));
       const vence = min >= 60 ? `vence en ${Math.floor(min / 60)} h ${min % 60} min` : `vence en ${min} min`;
       return `<li class="fol ${min < 20 ? 'urge' : ''} ${f.propio ? 'propio' : ''}">
         <div class="fol-cab"><span class="folio">${f.folio}</span><span class="vence">${vence}</span></div>
-        <div>${f.nombre}${f.propio ? ' · <b>tu prueba</b>' : ''}</div>
+        <div>${f.nombre}${f.propio ? ' · <b>tu prueba</b>' : ''}${f.estado === 'transferido' ? ' · dice que ya transfirió' : ''}</div>
         <div class="fol-nums">${f.nums.map(pad).join(' · ')}</div>
         <div class="fol-acc"><span class="monto num">${pesos(f.nums.length * CFG.precio)}</span>
           <div><button type="button" class="btn linea chico" data-liberar="${f.folio}">Liberar</button><button type="button" class="btn ok chico" data-pagado="${f.folio}">Ya pagó</button></div></div>
@@ -968,6 +1075,7 @@ p { margin: 0; }
     if (!f) return;
     if (p) { f.estado = 'pagado'; f.nums.forEach(n => { estado[n] = 'vendido'; }); bitacora.unshift({ t: Date.now(), txt: `${f.folio} · pagado · ${pesos(f.nums.length * CFG.precio)}`, tipo: 'pago' }); aviso(`${f.folio}: ${f.nums.length} vendidos.`); }
     else { f.estado = 'liberado'; f.nums.forEach(n => { estado[n] = 'libre'; }); bitacora.unshift({ t: Date.now(), txt: `${f.folio} · liberado a mano · ${f.nums.length} libres`, tipo: 'lib' }); }
+    if (f.propio) guardarApartados();
     render();
   });
 
@@ -984,24 +1092,31 @@ p { margin: 0; }
     const hoy = Date.now();
     let cambio = false;
     folios.forEach(f => {
-      if (f.estado === 'apartado' && f.vence <= hoy) {
+      if (PENDIENTE(f) && f.vence <= hoy) {
         f.estado = 'vencido'; f.nums.forEach(n => { estado[n] = 'libre'; }); cambio = true;
+        if (f.propio) guardarApartados();
         bitacora.unshift({ t: hoy, txt: `${f.folio} · vencido · ${f.nums.length} liberados`, tipo: 'lib' });
       }
     });
-    if (ultimo) {
-      const s = Math.max(0, Math.round((ultimo.vence - hoy) / 1000));
-      $('c-reloj').textContent = `${Math.floor(s / 3600)}:${String(Math.floor(s % 3600 / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
-    }
-    if (cambio) render();
+    if (ultimo) $('c-reloj').textContent = reloj(ultimo.vence - hoy);
+    if (cambio) render(); else renderMiApartado();
   }
   setInterval(tic, 1000);
   setInterval(renderGestion, 30000);
 
   // Estado inicial: una regla de ejemplo ya puesta para que se vea el buscador
+  // Link con folio (#SM1-0214): abre el comprobante si ese apartado está en este teléfono
+  function abrirDesdeLink() {
+    const h = decodeURIComponent(location.hash.slice(1));
+    const ap = h && folios.find(f => f.propio && f.folio === h);
+    if (ap && $('velo').hidden) { focoPrevio = $('ma-btn'); abrirComprobante(ap); }
+  }
+  window.addEventListener('hashchange', abrirDesdeLink);
+
   regla = 'termina'; pintarCampos(); saltarACoincidencia();
-  for (let n = centena * 100; n < centena * 100 + 100 && tuyos.size < 2; n++) if (coincide(n) && estado[n] === 'libre') tuyos.add(n);
+  if (!misApartados().length) for (let n = centena * 100; n < centena * 100 + 100 && tuyos.size < 2; n++) if (coincide(n) && estado[n] === 'libre') tuyos.add(n);
   render();
+  abrirDesdeLink();
 })();
 </script>
 </body>

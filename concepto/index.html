@@ -1,0 +1,1008 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Concepto Solo Mil</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@600;800;900&family=Atkinson+Hyperlegible:wght@400;700&family=Courier+Prime:wght@400;700&display=swap">
+<style>
+/* Layout: el sitio es un boleto impreso. Una tira de papel de 420px con talón perforado fijo al pie;
+   en escritorio la tira descansa sobre la "mesa" con las notas del concepto a un lado. */
+:root {
+  --papel:    #F3F5F1;  /* papel de boleto, frío, no crema */
+  --carton:   #E4EAE5;  /* cartulina: superficies secundarias */
+  --mesa:     #D5DDD8;  /* fondo detrás del boleto en escritorio */
+  --tinta:    #14223F;  /* añil oscuro: texto, vendido, talón */
+  --tinta-2:  #4B5A72;  /* texto secundario */
+  --linea:    #14223F2E;
+  --sello:    #CF3519;  /* rojo de sello de goma: lo tuyo, la acción */
+  --sello-tx: #FFFFFF;
+  --pacifico: #0B7A6F;  /* confirmado, pagado, a tiempo */
+  --apartado: #C2860A;  /* rayado de apartado */
+  --sobre-tinta: #F3F5F1;
+
+  --f-display: "Sofia Sans Extra Condensed", "Roboto Condensed", "Arial Narrow", sans-serif;
+  --f-texto:   "Atkinson Hyperlegible", Roboto, "Segoe UI", system-ui, sans-serif;
+  --f-folio:   "Courier Prime", "Courier New", ui-monospace, monospace;
+
+  --r: 6px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papel: #101828; --carton: #19243A; --mesa: #0A111D;
+    --tinta: #E9EDF3; --tinta-2: #9DA9BC; --linea: #E9EDF32B;
+    --sello: #FF6847; --sello-tx: #1A0905;
+    --pacifico: #3CC4B2; --apartado: #E3AE3A; --sobre-tinta: #101828;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --papel: #101828; --carton: #19243A; --mesa: #0A111D;
+  --tinta: #E9EDF3; --tinta-2: #9DA9BC; --linea: #E9EDF32B;
+  --sello: #FF6847; --sello-tx: #1A0905;
+  --pacifico: #3CC4B2; --apartado: #E3AE3A; --sobre-tinta: #101828;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--papel); color: var(--tinta);
+  font: 16px/1.5 var(--f-texto);
+}
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--sello); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+.folio { font-family: var(--f-folio); font-weight: 700; letter-spacing: .02em; }
+.eyebrow { font-size: .75rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-2); }
+h1, h2, h3 { font-family: var(--f-display); font-weight: 900; line-height: .95; margin: 0; text-wrap: balance; letter-spacing: .005em; }
+h2 { font-size: 2rem; text-transform: uppercase; }
+p { margin: 0; }
+
+/* ---------- Estructura de la página ---------- */
+.franja {
+  background: var(--tinta); color: var(--sobre-tinta);
+  font-size: .8125rem; padding-block: 8px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-wrap: wrap; gap: 4px 16px; justify-content: space-between;
+}
+.franja b { font-family: var(--f-folio); }
+.layout {
+  display: grid; gap: 40px; grid-template-columns: minmax(0, 1fr);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 48px;
+  max-width: 1180px; margin: 0 auto;
+}
+.app { order: -1; min-width: 0; }
+.notas { min-width: 0; }
+@media (min-width: 980px) {
+  body { background: var(--mesa); }
+  .layout { grid-template-columns: 420px minmax(0, 1fr); gap: 56px; padding-block: 40px 64px; align-items: start; }
+  .app { order: 0; background: var(--papel); border-radius: 4px; box-shadow: 0 1px 0 var(--linea), 0 24px 48px -24px #0A111D55; }
+  .app-inner { padding: 0 20px; }
+  .notas { position: sticky; top: 24px; }
+}
+
+/* ---------- Encabezado de la app ---------- */
+.top {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding-block: 14px; border-bottom: 2px solid var(--tinta);
+}
+.marca { display: flex; align-items: center; gap: 4px; font-family: var(--f-display); font-weight: 900; font-size: 1.75rem; line-height: 1; letter-spacing: .01em; }
+.marca span:last-child {
+  background: var(--tinta); color: var(--sobre-tinta); padding: 2px 8px 1px; border-radius: 3px;
+  position: relative;
+}
+.marca span:last-child::before, .marca span:last-child::after {
+  content: ""; position: absolute; top: 50%; width: 8px; height: 8px; margin-top: -4px; border-radius: 50%; background: var(--papel);
+}
+.marca span:last-child::before { left: -4px; }
+.marca span:last-child::after { right: -4px; }
+.vista { display: inline-flex; border: 1.5px solid var(--tinta); border-radius: 999px; padding: 2px; }
+.vista button { border: 0; background: none; padding: 5px 12px; border-radius: 999px; font-size: .8125rem; font-weight: 700; }
+.vista button[aria-pressed="true"] { background: var(--tinta); color: var(--sobre-tinta); }
+
+.seccion { padding-block: 28px; border-bottom: 1px dashed var(--linea); display: grid; gap: 14px; }
+.seccion:last-of-type { border-bottom: 0; }
+
+/* ---------- Boleto principal ---------- */
+.boleto {
+  margin-top: 20px; background: var(--carton); border-radius: var(--r); position: relative;
+  display: grid;
+}
+.boleto-cuerpo { padding: 18px 18px 20px; display: grid; gap: 10px; }
+.boleto h1 { font-size: clamp(2.6rem, 11vw, 3.2rem); text-transform: uppercase; }
+.boleto .valor { font-family: var(--f-display); font-weight: 800; font-size: 1.25rem; color: var(--tinta-2); }
+.precio-fila { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.precio { font-family: var(--f-display); font-weight: 900; font-size: 3.4rem; line-height: .9; color: var(--sello); }
+.precio small { font-size: 1.1rem; font-weight: 800; color: var(--tinta); }
+.perfora {
+  height: 0; border-top: 2px dashed var(--linea); margin: 0 14px; position: relative;
+}
+.perfora::before, .perfora::after {
+  content: ""; position: absolute; top: -12px; width: 22px; height: 22px; border-radius: 50%; background: var(--papel);
+}
+.perfora::before { left: -26px; } .perfora::after { right: -26px; }
+.boleto-talon { padding: 14px 18px 16px; display: grid; gap: 4px; }
+.fecha-dura { font-family: var(--f-display); font-weight: 900; font-size: 1.9rem; line-height: 1; text-transform: uppercase; }
+.fecha-dura em { font-style: normal; color: var(--sello); }
+
+/* Contador: una regla de 1,000 */
+.contador { display: grid; gap: 6px; }
+.regla { position: relative; height: 18px; display: flex; border: 1.5px solid var(--tinta); border-radius: 3px; overflow: hidden; background: var(--papel); }
+.regla i { display: block; height: 100%; }
+.regla .r-v { background: var(--tinta); }
+.regla .r-a { background: repeating-linear-gradient(135deg, var(--apartado) 0 3px, transparent 3px 7px); }
+.regla::after {
+  content: ""; position: absolute; inset: 0;
+  background: repeating-linear-gradient(90deg, transparent 0 calc(10% - 1px), var(--linea) calc(10% - 1px) 10%);
+  pointer-events: none;
+}
+.contador-txt { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: .875rem; }
+.contador-txt b { font-family: var(--f-display); font-size: 1.15rem; font-weight: 800; }
+
+/* Evidencia del premio */
+.evidencia { position: relative; border: 1.5px solid var(--tinta); border-radius: var(--r); padding: 14px; display: grid; gap: 10px; background: var(--papel); }
+.evidencia svg { width: 100%; height: auto; display: block; color: var(--tinta); }
+.evidencia figcaption { font-size: .875rem; color: var(--tinta-2); }
+.sello-goma {
+  position: absolute; top: 18px; right: 14px; transform: rotate(-7deg);
+  border: 2.5px solid var(--sello); color: var(--sello); border-radius: 4px;
+  font-family: var(--f-display); font-weight: 900; font-size: 1.05rem; line-height: 1; padding: 5px 8px 4px; text-transform: uppercase; text-align: center;
+}
+.sello-goma small { display: block; font-family: var(--f-folio); font-size: .7rem; font-weight: 700; letter-spacing: .04em; margin-top: 2px; }
+
+/* Probabilidades */
+.prob { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; align-items: center; }
+.prob-big { font-family: var(--f-display); font-weight: 900; font-size: 3.6rem; line-height: .85; }
+.prob-big small { display: block; font-size: 1rem; font-weight: 800; color: var(--tinta-2); text-transform: uppercase; letter-spacing: .04em; }
+.prob p { font-size: .9375rem; }
+.comparativa { display: grid; gap: 8px; font-size: .8125rem; color: var(--tinta-2); }
+.comparativa div { display: grid; grid-template-columns: 7.5rem 1fr; gap: 10px; align-items: center; }
+.barra { height: 10px; background: var(--carton); border-radius: 2px; overflow: hidden; }
+.barra i { display: block; height: 100%; background: var(--tinta); }
+
+/* ---------- Elegir número ---------- */
+.reglas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.chip {
+  border: 1.5px solid var(--tinta); background: var(--papel); border-radius: 4px;
+  padding: 8px 6px; font-size: .875rem; font-weight: 700; line-height: 1.15; min-height: 44px;
+}
+.chip[aria-checked="true"] { background: var(--tinta); color: var(--sobre-tinta); }
+.regla-cfg { display: grid; gap: 8px; background: var(--carton); border-radius: var(--r); padding: 12px; }
+.campos { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; }
+.campo { display: grid; gap: 4px; font-size: .8125rem; font-weight: 700; }
+.campo input {
+  border: 1.5px solid var(--tinta); border-radius: 4px; background: var(--papel); padding: 8px 10px;
+  font-family: var(--f-display); font-weight: 800; font-size: 1.4rem; line-height: 1; width: 7.5rem; letter-spacing: .06em;
+}
+.campo input.ancho { width: 12rem; }
+.pista { font-size: .8125rem; color: var(--tinta-2); }
+.resultado { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; font-size: .9375rem; min-height: 1.5em; }
+.resultado b { font-family: var(--f-display); font-size: 1.2rem; }
+.btn {
+  border: 0; border-radius: 4px; padding: 10px 14px; font-weight: 700; font-size: .9375rem; min-height: 44px;
+  background: var(--tinta); color: var(--sobre-tinta);
+}
+.btn.sello { background: var(--sello); color: var(--sello-tx); }
+.btn.linea { background: transparent; color: var(--tinta); border: 1.5px solid var(--tinta); }
+.btn.chico { min-height: 36px; padding: 6px 10px; font-size: .875rem; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.link { background: none; border: 0; padding: 0; text-decoration: underline; text-underline-offset: 3px; font-weight: 700; font-size: .875rem; }
+
+.unico {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  border: 1.5px solid var(--tinta); border-radius: var(--r); padding: 10px 12px; background: var(--papel);
+}
+.unico .n { font-family: var(--f-display); font-weight: 900; font-size: 2.8rem; line-height: .9; }
+
+/* Pestañas por centena */
+.centenas { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.centena {
+  position: relative; border: 1.5px solid var(--linea); background: var(--papel); border-radius: 4px;
+  padding: 6px 4px 8px; display: grid; gap: 4px; justify-items: center; min-height: 52px;
+}
+.centena .rng { font-family: var(--f-display); font-weight: 800; font-size: 1.05rem; line-height: 1; }
+.centena .rng small { font-weight: 600; color: var(--tinta-2); font-size: .8rem; }
+.centena .mini { width: 80%; height: 4px; background: var(--carton); border-radius: 2px; overflow: hidden; }
+.centena .mini i { display: block; height: 100%; background: var(--pacifico); }
+.centena[aria-selected="true"] { border-color: var(--tinta); background: var(--tinta); color: var(--sobre-tinta); }
+.centena[aria-selected="true"] .rng small { color: inherit; opacity: .75; }
+.centena[aria-selected="true"] .mini { background: #FFFFFF33; }
+.centena .badge {
+  position: absolute; top: -7px; right: -5px; background: var(--sello); color: var(--sello-tx);
+  font-size: .6875rem; font-weight: 700; border-radius: 999px; padding: 0 6px; line-height: 1.5;
+}
+
+.cuadricula-wrap { display: grid; gap: 6px; }
+.ejes { display: grid; grid-template-columns: 1.1rem repeat(10, minmax(0, 1fr)); gap: 3px; font-family: var(--f-folio); font-size: .6875rem; color: var(--tinta-2); text-align: center; }
+.cuadricula-fila { display: grid; grid-template-columns: 1.1rem minmax(0, 1fr); gap: 3px; }
+.ejes-y { display: grid; grid-template-rows: repeat(10, minmax(0, 1fr)); gap: 3px; font-family: var(--f-folio); font-size: .6875rem; color: var(--tinta-2); align-items: center; text-align: center; }
+.cuadricula { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 3px; }
+.b {
+  aspect-ratio: 1 / .92; border: 1px solid var(--linea); background: var(--papel); border-radius: 3px; padding: 0;
+  font-family: var(--f-display); font-weight: 800; font-size: clamp(.8rem, 3.6vw, .98rem); letter-spacing: .02em;
+  display: grid; place-items: center; min-width: 0; transition: opacity .15s, transform .1s;
+}
+.b.vendido { background: var(--tinta); color: var(--tinta-2); border-color: var(--tinta); cursor: not-allowed; }
+.b.apartado { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--apartado) 55%, transparent) 0 3px, transparent 3px 7px), var(--papel); color: var(--tinta-2); border-color: var(--apartado); cursor: not-allowed; }
+.b.tuyo { background: var(--sello); color: var(--sello-tx); border-color: var(--sello); }
+.b.libre:active { transform: scale(.94); }
+.filtrando .b.fuera { opacity: .16; }
+.filtrando .b.dentro.libre { border: 2px solid var(--tinta); }
+
+.leyenda { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .8125rem; color: var(--tinta-2); }
+.leyenda span { display: inline-flex; align-items: center; gap: 6px; }
+.leyenda i { width: 16px; height: 16px; border-radius: 3px; display: inline-block; border: 1px solid var(--linea); background: var(--papel); }
+.leyenda i.v { background: var(--tinta); border-color: var(--tinta); }
+.leyenda i.a { background: repeating-linear-gradient(135deg, var(--apartado) 0 2px, transparent 2px 5px); border-color: var(--apartado); }
+.leyenda i.t { background: var(--sello); border-color: var(--sello); }
+
+/* Escalera */
+.escalera { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-left: 2px solid var(--linea); }
+.escalera li { display: grid; grid-template-columns: 3.4rem 1fr; gap: 10px; align-items: baseline; padding: 8px 0 8px 14px; position: relative; }
+.escalera li::before { content: ""; position: absolute; left: -7px; top: 15px; width: 12px; height: 12px; border-radius: 50%; background: var(--papel); border: 2px solid var(--linea); }
+.escalera li.logrado::before { background: var(--sello); border-color: var(--sello); }
+.escalera .cuantos { font-family: var(--f-display); font-weight: 900; font-size: 1.6rem; line-height: 1; }
+.escalera .que { font-size: .9375rem; }
+.escalera .que small { display: block; color: var(--tinta-2); font-size: .8125rem; }
+
+/* Sorteo */
+.billete {
+  border: 1.5px solid var(--tinta); border-radius: var(--r); padding: 14px; display: grid; gap: 8px;
+  background:
+    repeating-radial-gradient(circle at 100% 0, transparent 0 9px, var(--linea) 9px 10px),
+    var(--papel);
+}
+.billete .cifras { display: flex; gap: 4px; }
+.billete .cifras span {
+  width: 2.6rem; height: 3.2rem; display: grid; place-items: center; border-radius: 3px;
+  font-family: var(--f-display); font-weight: 900; font-size: 2.3rem; background: var(--carton); color: var(--tinta-2);
+}
+.billete .cifras span.g { background: var(--tinta); color: var(--sobre-tinta); }
+
+/* Historial */
+.historial { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.evento { border: 1.5px solid var(--tinta); border-radius: var(--r); padding: 10px; display: grid; gap: 4px; min-height: 92px; align-content: start; }
+.evento .n { font-family: var(--f-display); font-weight: 900; font-size: 1.8rem; line-height: 1; }
+.evento.vacio { border-style: dashed; border-color: var(--linea); color: var(--tinta-2); }
+.evento .estado { font-size: .75rem; font-weight: 700; }
+.evento .estado.vivo { color: var(--sello); }
+
+.pie { font-size: .875rem; color: var(--tinta-2); display: grid; gap: 6px; padding-block: 24px 28px; }
+
+/* ---------- Talón fijo ---------- */
+.talon {
+  position: sticky; bottom: 0; z-index: 5; margin-top: 8px;
+  background: var(--tinta); color: var(--sobre-tinta);
+  border-radius: 8px 8px 0 0; padding: 14px 14px calc(14px + env(safe-area-inset-bottom, 0px));
+  display: grid; gap: 10px;
+}
+.talon::before {
+  content: ""; position: absolute; left: 10px; right: 10px; top: 5px; height: 2px;
+  background: repeating-linear-gradient(90deg, var(--sobre-tinta) 0 6px, transparent 6px 12px); opacity: .35;
+}
+.talon-fila { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.talon .msg { font-size: .875rem; line-height: 1.3; min-width: 0; }
+.talon .msg b { color: var(--sello); }
+.mis { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; min-height: 0; }
+.mis:empty { display: none; }
+.mis button {
+  flex: none; border: 0; border-radius: 3px; background: var(--sello); color: var(--sello-tx);
+  font-family: var(--f-display); font-weight: 900; font-size: 1.1rem; padding: 3px 8px; line-height: 1.2;
+}
+.mis button span { font-family: var(--f-texto); font-weight: 400; font-size: .8rem; opacity: .8; margin-left: 4px; }
+.talon .btn.sello { white-space: nowrap; }
+.talon .btn:disabled { opacity: .5; }
+
+.toast {
+  position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); width: max-content; max-width: 92%;
+  background: var(--sello); color: var(--sello-tx); padding: 8px 14px; border-radius: 4px; font-weight: 700; font-size: .875rem;
+}
+
+/* ---------- Hoja de apartado ---------- */
+.velo {
+  position: fixed; inset: 0; z-index: 20; background: #0A111DB3; display: grid; align-items: end; justify-items: center;
+  padding-top: max(24px, env(safe-area-inset-top, 0px));
+}
+.hoja {
+  width: 100%; max-width: 440px; max-height: 92vh; overflow-y: auto; background: var(--papel); color: var(--tinta);
+  border-radius: 10px 10px 0 0; padding: 20px max(18px, env(safe-area-inset-left, 0px)) calc(22px + env(safe-area-inset-bottom, 0px)) max(18px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 16px;
+}
+@media (min-width: 600px) { .velo { align-items: center; } .hoja { border-radius: 10px; } }
+.hoja h2 { font-size: 2.2rem; }
+.hoja form { display: grid; gap: 12px; }
+.hoja .campo input { width: 100%; font-family: var(--f-texto); font-weight: 400; font-size: 1.05rem; letter-spacing: 0; }
+.error { color: var(--sello); font-size: .875rem; font-weight: 700; }
+.resumen { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.resumen .n { background: var(--sello); color: var(--sello-tx); font-family: var(--f-display); font-weight: 900; font-size: 1.1rem; padding: 2px 8px; border-radius: 3px; }
+
+.comprobante { background: var(--carton); border-radius: var(--r); padding: 14px; display: grid; gap: 4px; position: relative; overflow: hidden; }
+.comprobante .folio { font-size: 1.6rem; }
+.comprobante .sello-goma { top: 14px; right: 12px; }
+.reloj { font-family: var(--f-display); font-weight: 900; font-size: 2.6rem; line-height: 1; color: var(--pacifico); }
+.pasos { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; counter-reset: p; }
+.pasos li { display: grid; grid-template-columns: 2rem 1fr; gap: 10px; counter-increment: p; }
+.pasos li::before {
+  content: counter(p); width: 2rem; height: 2rem; border-radius: 50%; border: 2px solid var(--tinta);
+  display: grid; place-items: center; font-family: var(--f-display); font-weight: 900; font-size: 1.15rem;
+}
+.pasos li > div { display: grid; gap: 6px; min-width: 0; }
+.dato { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.dato code { font-family: var(--f-folio); font-weight: 700; font-size: 1rem; background: var(--carton); padding: 4px 8px; border-radius: 3px; overflow-wrap: anywhere; }
+.burbuja {
+  background: #DCF4D9; color: #10240F; border-radius: 8px 8px 8px 2px; padding: 10px 12px; font-size: .875rem; white-space: pre-line; max-width: 300px;
+  box-shadow: 0 1px 0 #0000001A;
+}
+.aviso { font-size: .8125rem; color: var(--tinta-2); }
+
+/* ---------- Vista de gestión ---------- */
+.tablero { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 20px; }
+.cifra { background: var(--carton); border-radius: var(--r); padding: 12px; display: grid; gap: 2px; }
+.cifra b { font-family: var(--f-display); font-weight: 900; font-size: 2rem; line-height: 1; }
+.cifra span { font-size: .8125rem; color: var(--tinta-2); }
+.cifra.ok b { color: var(--pacifico); }
+.por-conciliar { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.fol {
+  border: 1.5px solid var(--linea); border-left: 6px solid var(--apartado); border-radius: 4px; padding: 10px 12px;
+  display: grid; gap: 6px; background: var(--papel);
+}
+.fol.urge { border-left-color: var(--sello); }
+.fol.propio { border-color: var(--tinta); border-left-color: var(--sello); }
+.fol-cab { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.fol-cab .vence { font-size: .8125rem; font-weight: 700; color: var(--tinta-2); }
+.fol.urge .vence { color: var(--sello); }
+.fol-nums { font-family: var(--f-display); font-weight: 800; font-size: 1.05rem; letter-spacing: .03em; overflow-wrap: anywhere; }
+.fol-acc { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.fol-acc .monto { font-family: var(--f-display); font-weight: 900; font-size: 1.4rem; }
+.fol-acc div { display: flex; gap: 6px; }
+.btn.ok { background: var(--pacifico); color: var(--papel); }
+.bitacora { list-style: none; margin: 0; padding: 0; font-family: var(--f-folio); font-size: .8125rem; display: grid; gap: 2px; max-height: 220px; overflow-y: auto; }
+.bitacora li { padding: 4px 0; border-bottom: 1px dotted var(--linea); overflow-wrap: anywhere; }
+.bitacora li b { color: var(--pacifico); }
+.bitacora li.lib b { color: var(--apartado); }
+
+/* ---------- Notas del concepto ---------- */
+.notas { display: grid; gap: 28px; font-size: .9375rem; }
+.notas > header { display: grid; gap: 10px; border-top: 2px solid var(--tinta); padding-top: 18px; }
+.notas h1 { font-size: clamp(2.6rem, 6vw, 3.8rem); text-transform: uppercase; }
+.notas h3 { font-size: 1.5rem; text-transform: uppercase; }
+.notas .lead { font-size: 1.125rem; max-width: 60ch; }
+.notas p, .notas li { max-width: 62ch; }
+.decisiones { display: grid; gap: 18px; margin: 0; padding: 0; list-style: none; }
+.decisiones li { display: grid; gap: 4px; padding-left: 14px; border-left: 3px solid var(--tinta); }
+.decisiones li strong { font-family: var(--f-display); font-weight: 800; font-size: 1.3rem; line-height: 1.1; }
+.evitar { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.evitar li { border: 1.5px solid var(--linea); padding: 3px 9px; border-radius: 999px; font-size: .8125rem; text-decoration: line-through; text-decoration-color: var(--sello); text-decoration-thickness: 2px; color: var(--tinta-2); }
+.muestras { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; }
+.muestra { display: grid; gap: 6px; font-size: .8125rem; }
+.muestra i { display: block; height: 44px; border-radius: 4px; border: 1px solid var(--linea); }
+.muestra b { display: block; font-size: .875rem; }
+.tipos { display: grid; gap: 12px; }
+.tipos div { display: grid; gap: 2px; }
+.tipos .d { font-family: var(--f-display); font-weight: 900; font-size: 2rem; line-height: 1; text-transform: uppercase; }
+.tipos .t { font-size: 1.1rem; }
+.tipos .f { font-family: var(--f-folio); font-weight: 700; font-size: 1.1rem; }
+.tipos small { color: var(--tinta-2); font-size: .8125rem; }
+.abierto { margin: 0; padding-left: 1.1rem; display: grid; gap: 4px; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="franja">
+  <span>Concepto visual <b>v0</b> · prototipo navegable con datos de ejemplo</span>
+  <span>Nombre provisional: <b>Solo Mil</b></span>
+</div>
+
+<div class="layout">
+
+  <!-- =================== APP =================== -->
+  <main class="app" id="app">
+    <div class="app-inner">
+      <div class="top">
+        <div class="marca" aria-label="Solo Mil"><span>SOLO</span><span>MIL</span></div>
+        <div class="vista" role="group" aria-label="Cambiar vista">
+          <button type="button" id="v-cliente" aria-pressed="true">Cliente</button>
+          <button type="button" id="v-gestion" aria-pressed="false">Gestión</button>
+        </div>
+      </div>
+
+      <!-- ---------- VISTA CLIENTE ---------- -->
+      <div id="vista-cliente">
+        <article class="boleto" aria-labelledby="premio-titulo">
+          <div class="boleto-cuerpo">
+            <p class="eyebrow">Rifa <span class="folio">#1</span> · Combo “Arranca tu negocio”</p>
+            <h1 id="premio-titulo">Congelador, hielera y báscula</h1>
+            <p class="valor num">Valor del premio: $12,000</p>
+            <div class="precio-fila">
+              <span class="precio num">$25 <small>el boleto</small></span>
+              <span class="pista">Solo 1,000 boletos. Tú eliges tu número.</span>
+            </div>
+          </div>
+          <div class="perfora" aria-hidden="true"></div>
+          <div class="boleto-talon">
+            <p class="eyebrow">Se rifa el</p>
+            <p class="fecha-dura">Viernes 27 de noviembre <em>vendido o no</em></p>
+            <div class="contador" style="margin-top:10px">
+              <div class="regla" role="img" id="regla" aria-label=""><i class="r-v" id="r-v"></i><i class="r-a" id="r-a"></i></div>
+              <div class="contador-txt num" id="contador-txt"></div>
+            </div>
+          </div>
+        </article>
+
+        <section class="seccion" aria-labelledby="h-premio">
+          <h2 id="h-premio">El premio ya lo tenemos</h2>
+          <figure class="evidencia" style="margin:0">
+            <svg viewBox="0 0 360 170" role="img" aria-label="Dibujo de un congelador horizontal, una hielera y una báscula">
+              <g fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+                <rect x="20" y="58" width="190" height="92" rx="6" style="fill:var(--carton)"/>
+                <path d="M16 58 h198 v-14 a6 6 0 0 0 -6 -6 h-186 a6 6 0 0 0 -6 6 z" style="fill:var(--papel)"/>
+                <path d="M92 50 h46"/>
+                <path d="M30 150 v8 M200 150 v8"/>
+                <rect x="232" y="96" width="78" height="54" rx="6" style="fill:var(--papel)"/>
+                <path d="M228 96 h86 M256 88 h30 v8"/>
+                <path d="M322 150 h30 l-4 -10 h-22 z" style="fill:var(--carton)"/>
+                <path d="M330 140 v-26 h14 v26"/>
+                <rect x="318" y="104" width="38" height="10" rx="2" style="fill:var(--papel)"/>
+              </g>
+              <text x="115" y="112" text-anchor="middle" fill="currentColor" style="font: 800 15px var(--f-display); letter-spacing:.08em">FOTO REAL AQUÍ</text>
+            </svg>
+            <figcaption>Aquí va la foto que tomamos con el premio ya comprado, en nuestras manos. Nunca una foto de catálogo.</figcaption>
+            <div class="sello-goma" aria-hidden="true">Ya lo<br>tenemos<small>03·NOV·26</small></div>
+          </figure>
+        </section>
+
+        <section class="seccion" aria-labelledby="h-prob">
+          <h2 id="h-prob">Tus probabilidades, claras</h2>
+          <div class="prob">
+            <div class="prob-big num">1<small>en 1,000</small></div>
+            <p>Cada boleto compite contra 999, no contra medio millón. Con 5 boletos tienes <b>1 en 200</b>.</p>
+          </div>
+          <div class="comparativa num" aria-label="Comparación de probabilidades con la compra mínima">
+            <div><span>Aquí, 1 boleto</span><span class="barra"><i style="width:100%"></i></span></div>
+            <div><span>Rifas de 500 mil boletos, compra mínima</span><span class="barra"><i style="width:10%"></i></span></div>
+          </div>
+          <p class="aviso">La segunda barra es un estimado de rifas con ~500,000 boletos y paquete mínimo de 50.</p>
+        </section>
+
+        <section class="seccion" aria-labelledby="h-elige" id="elige">
+          <h2 id="h-elige">Elige tu número</h2>
+          <p>Tú pones la regla y te enseñamos cuáles quedan libres.</p>
+          <div class="reglas" role="radiogroup" aria-label="Regla de búsqueda" id="reglas">
+            <button type="button" class="chip" role="radio" aria-checked="false" data-regla="telefono">Mi teléfono</button>
+            <button type="button" class="chip" role="radio" aria-checked="false" data-regla="termina">Termina en</button>
+            <button type="button" class="chip" role="radio" aria-checked="false" data-regla="contiene">Trae un</button>
+            <button type="button" class="chip" role="radio" aria-checked="false" data-regla="exacto">Uno exacto</button>
+            <button type="button" class="chip" role="radio" aria-checked="false" data-regla="capicua">Capicúas</button>
+            <button type="button" class="chip" role="radio" aria-checked="false" data-regla="seguidos">Seguiditos</button>
+          </div>
+          <div class="regla-cfg" id="regla-cfg" hidden>
+            <div class="campos" id="campos"></div>
+            <p class="pista" id="regla-pista"></p>
+            <div class="resultado" id="resultado" aria-live="polite"></div>
+          </div>
+
+          <div class="centenas" role="tablist" aria-label="Centenas" id="centenas"></div>
+          <div class="cuadricula-wrap">
+            <div class="ejes" aria-hidden="true"><span></span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></div>
+            <div class="cuadricula-fila">
+              <div class="ejes-y" aria-hidden="true" id="ejes-y"></div>
+              <div class="cuadricula" id="cuadricula" role="group" aria-label="Boletos"></div>
+            </div>
+          </div>
+          <div class="leyenda">
+            <span><i></i>Libre</span>
+            <span><i class="a"></i>Apartado (2 h)</span>
+            <span><i class="v"></i>Vendido</span>
+            <span><i class="t"></i>Tuyo</span>
+          </div>
+        </section>
+
+        <section class="seccion" aria-labelledby="h-escalera">
+          <h2 id="h-escalera">Entre más llevas, más ganas</h2>
+          <ol class="escalera" id="escalera">
+            <li data-min="1"><span class="cuantos">1+</span><span class="que">Eliges tu número<small>Con cualquiera de las reglas o tocándolo.</small></span></li>
+            <li data-min="5"><span class="cuantos">5+</span><span class="que">Entras al sorteo de $1,000 en efectivo<small>Se sortea el mismo día, entre quienes llevan 5 o más.</small></span></li>
+            <li data-min="10"><span class="cuantos">10+</span><span class="que">Te llevas un regalo<small>Por definir.</small></span></li>
+            <li data-min="20"><span class="cuantos">20+</span><span class="que">Regalo y te lo entregamos en tu casa<small>Pochutla, Huatulco, Puerto Escondido y alrededores.</small></span></li>
+          </ol>
+        </section>
+
+        <section class="seccion" aria-labelledby="h-sorteo">
+          <h2 id="h-sorteo">Cómo sale el ganador</h2>
+          <div class="billete">
+            <p class="eyebrow">Ejemplo · premio mayor de la Lotería Nacional</p>
+            <div class="cifras" aria-label="Número del premio mayor de ejemplo: 4 8 4 8 7. Las tres últimas cifras son 4 8 7.">
+              <span>4</span><span>8</span><span class="g">4</span><span class="g">8</span><span class="g">7</span>
+            </div>
+            <p>Gana el boleto <b class="num">487</b>.</p>
+          </div>
+          <p>Gana el boleto que coincida con las últimas 3 cifras del premio mayor de la Lotería Nacional del viernes 27 de noviembre. El número lo publica la Lotería, no nosotros.</p>
+        </section>
+
+        <section class="seccion" aria-labelledby="h-hist">
+          <h2 id="h-hist">Nuestro historial</h2>
+          <p>Cada rifa deja aquí su registro, sin editar y sin borrar: boletos vendidos, número ganador y video de la entrega.</p>
+          <div class="historial">
+            <div class="evento"><span class="n folio">#1</span><span class="estado vivo">En venta</span><span class="pista">Esta es la primera.</span></div>
+            <div class="evento vacio"><span class="n folio">#2</span><span class="estado">Pronto</span></div>
+            <div class="evento vacio"><span class="n folio">#3</span><span class="estado">Pronto</span></div>
+          </div>
+        </section>
+
+        <footer class="pie">
+          <p><b>Atención por WhatsApp:</b> lunes a sábado, 9:00 a 21:00.</p>
+          <p>Bases completas de la rifa · Aviso de privacidad</p>
+        </footer>
+
+        <div class="talon" id="talon">
+          <div class="toast" id="toast" role="status" hidden></div>
+          <div class="mis" id="mis" aria-label="Tus números"></div>
+          <div class="talon-fila">
+            <p class="msg" id="talon-msg"></p>
+            <button type="button" class="btn sello" id="btn-apartar" disabled>Apartar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- VISTA GESTIÓN ---------- -->
+      <div id="vista-gestion" hidden>
+        <div class="tablero num" id="tablero"></div>
+        <section class="seccion" aria-labelledby="h-conc">
+          <h2 id="h-conc">Por conciliar</h2>
+          <p class="pista">Revisa la transferencia en el banco y marca el folio. Un toque. Lo que vence solo se libera.</p>
+          <ul class="por-conciliar" id="por-conciliar"></ul>
+        </section>
+        <section class="seccion" aria-labelledby="h-bit">
+          <h2 id="h-bit">Registro</h2>
+          <p class="pista">Cada movimiento queda guardado. No se edita ni se borra.</p>
+          <ul class="bitacora" id="bitacora"></ul>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- =================== NOTAS =================== -->
+  <aside class="notas" aria-labelledby="n-titulo">
+    <header>
+      <p class="eyebrow">Concepto visual · Rifa #1</p>
+      <h1 id="n-titulo">Un boleto impreso, no un casino</h1>
+      <p class="lead">El que compra se pregunta una sola cosa: ¿esto es fraude? En la costa, lo que da confianza es papel con folio, fecha y sello. La interfaz toma eso prestado: boleto con talón perforado, folios de máquina de escribir y un sello rojo cuando algo es tuyo.</p>
+    </header>
+
+    <section>
+      <h3>Lo que dejamos fuera</h3>
+      <ul class="evitar" style="margin-top:10px">
+        <li>dorado de casino</li><li>confeti</li><li>ruletas</li><li>neón</li><li>degradados morados</li><li>tarjetas idénticas</li><li>fotos de catálogo</li>
+      </ul>
+    </section>
+
+    <section>
+      <h3>Decisiones</h3>
+      <ul class="decisiones" style="margin-top:12px">
+        <li><strong>Cuadrícula 10×10 por centena</strong>Fila = decena, columna = unidad. El 487 está en la pestaña 4, fila 8, columna 7. Nadie scrollea 1,000 números en un celular.</li>
+        <li><strong>El estado se ve en la forma, no solo en el color</strong>Apartado va rayado, vendido va relleno, lo tuyo va en rojo sello. Se distingue con el sol de frente, en pantallas baratas y para quien no distingue colores.</li>
+        <li><strong>Tú pones las reglas</strong>“Mi teléfono” va primero porque es lo más personal y lo único imposible en una rifa de medio millón. Si tu número ya se vendió, te sugerimos la regla más cercana.</li>
+        <li><strong>El talón siempre a la vista</strong>Dice cuánto llevas, cuánto pagas y cuánto te falta para el siguiente escalón. Es la única llamada a la acción de la página.</li>
+        <li><strong>Fecha dura, arriba, siempre</strong>“Viernes 27 de noviembre, vendido o no” está en el boleto, no en las bases.</li>
+        <li><strong>Gestión con el mismo papel</strong>La vista de conciliación es una lista de folios ordenada por lo que vence primero, con un botón por folio y un registro que no se borra.</li>
+        <li><strong>Hecho para el navegador de Facebook</strong>Una página, sin frameworks, sin imágenes pesadas, fuentes con respaldo del sistema, botones de 44&nbsp;px y contraste AA. Prueba en el celu: cambia a “Gestión” arriba.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h3>Paleta</h3>
+      <div class="muestras" style="margin-top:12px">
+        <div class="muestra"><i style="background:var(--papel)"></i><b>Papel</b>Fondo. Frío, no crema.</div>
+        <div class="muestra"><i style="background:var(--tinta)"></i><b>Añil</b>Texto y vendido.</div>
+        <div class="muestra"><i style="background:var(--sello)"></i><b>Sello</b>Lo tuyo y la acción.</div>
+        <div class="muestra"><i style="background:var(--pacifico)"></i><b>Pacífico</b>Pagado, a tiempo.</div>
+        <div class="muestra"><i style="background:repeating-linear-gradient(135deg,var(--apartado) 0 3px,transparent 3px 7px)"></i><b>Apartado</b>Siempre rayado.</div>
+      </div>
+    </section>
+
+    <section>
+      <h3>Letra</h3>
+      <div class="tipos" style="margin-top:12px">
+        <div><span class="d">487 · Se rifa el viernes</span><small>Sofia Sans Extra Condensed · números y titulares, como rótulo pintado</small></div>
+        <div><span class="t">Tienes 2 horas para pagar.</span><small>Atkinson Hyperlegible · texto, diseñada para baja visión</small></div>
+        <div><span class="f">SM1-0214</span><small>Courier Prime · folios, CLABE, registro</small></div>
+      </div>
+    </section>
+
+    <section>
+      <h3>Abierto a discusión</h3>
+      <ol class="abierto" style="margin-top:10px">
+        <li>El nombre. “Solo Mil” es provisional y se cambia en un solo lugar.</li>
+        <li>El premio y la fecha son la propuesta del documento, no una decisión.</li>
+        <li>CLABE, WhatsApp y horario son de ejemplo.</li>
+        <li>Si mostramos nombres en la lista de vendidos o solo iniciales.</li>
+      </ol>
+    </section>
+  </aside>
+</div>
+
+<!-- =================== HOJA DE APARTADO =================== -->
+<div class="velo" id="velo" hidden>
+  <div class="hoja" role="dialog" aria-modal="true" aria-labelledby="hoja-titulo" id="hoja">
+    <div id="paso-datos">
+      <div style="display:grid;gap:14px">
+        <h2 id="hoja-titulo">¿A nombre de quién?</h2>
+        <div class="resumen" id="resumen-datos"></div>
+        <form id="form-datos" novalidate>
+          <label class="campo" for="in-nombre">Nombre
+            <input id="in-nombre" name="nombre" autocomplete="name" placeholder="Como aparece en tu INE">
+          </label>
+          <label class="campo" for="in-wa">WhatsApp (10 dígitos)
+            <input id="in-wa" name="wa" inputmode="numeric" autocomplete="tel-national" placeholder="958 123 4567">
+          </label>
+          <p class="error" id="form-error" role="alert" hidden></p>
+          <button class="btn sello" type="submit" id="btn-confirmar">Apartar mis números</button>
+          <button class="btn linea" type="button" id="btn-cancelar">Seguir eligiendo</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="paso-listo" hidden>
+      <div style="display:grid;gap:16px">
+        <h2>Apartado. Ahora paga.</h2>
+        <div class="comprobante">
+          <p class="eyebrow">Tu folio</p>
+          <p class="folio" id="c-folio"></p>
+          <div class="resumen" id="c-nums"></div>
+          <p class="num"><b id="c-total"></b></p>
+          <div class="sello-goma" aria-hidden="true">Apartado<small id="c-hora"></small></div>
+        </div>
+        <div>
+          <p class="eyebrow">Tienes para pagar</p>
+          <p class="reloj num" id="c-reloj" aria-live="off">2:00:00</p>
+          <p class="aviso">Si no pagas a tiempo, tus números se liberan solos para que alguien más los aparte.</p>
+        </div>
+        <ol class="pasos">
+          <li><div>
+            <b>Transfiere por SPEI</b>
+            <div class="dato"><code id="c-clabe">0123 4567 8901 2345 67</code><button type="button" class="btn linea chico" data-copiar="c-clabe">Copiar CLABE</button></div>
+            <span class="pista">En el concepto escribe tu folio: <b class="folio" id="c-folio2"></b></span>
+          </div></li>
+          <li><div>
+            <b>Mándanos tu comprobante por WhatsApp</b>
+            <div class="burbuja" id="c-mensaje"></div>
+            <button type="button" class="btn sello" id="btn-wa">Abrir WhatsApp con mi folio</button>
+            <span class="aviso">En el sitio real este botón abre WhatsApp con el mensaje ya escrito. Aquí solo lo copia.</span>
+          </div></li>
+          <li><div>
+            <b>Te confirmamos y tu número cambia a vendido</b>
+            <span class="pista">Lo puedes ver en la cuadrícula. Cualquiera lo puede ver.</span>
+          </div></li>
+        </ol>
+        <button type="button" class="btn linea" id="btn-cerrar">Listo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  'use strict';
+  const CFG = { prefijo: 'SM1', precio: 25, equilibrio: 480, minutos: 120 };
+  const N = 1000;
+  const $ = (id) => document.getElementById(id);
+  const pad = (n) => String(n).padStart(3, '0');
+  const pesos = (n) => '$' + n.toLocaleString('es-MX');
+
+  // ---------- Datos de ejemplo (deterministas) ----------
+  let seed = 27;
+  const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const estado = new Array(N).fill('libre');
+  for (let i = 0; i < N; i++) if (rnd() < 0.61) estado[i] = 'vendido';
+  const ahora = Date.now();
+  const nombres = ['Rosa M.', 'Juan Carlos P.', 'Lupita R.', 'Don Chema', 'Fernanda L.', 'Iván S.', 'Marisol C.', 'Pedro A.', 'Yesenia G.', 'Toño H.', 'Karla V.', 'Beto N.'];
+  const tamanos = [3, 1, 6, 2, 4, 1, 5, 3, 2, 4, 3, 3];
+  const folios = [];
+  let siguienteFolio = 202;
+  tamanos.forEach((k, idx) => {
+    const nums = [];
+    while (nums.length < k) { const n = Math.floor(rnd() * N); if (estado[n] === 'libre') { estado[n] = 'apartado'; nums.push(n); } }
+    nums.sort((a, b) => a - b);
+    folios.push({ folio: CFG.prefijo + '-' + String(siguienteFolio++).padStart(4, '0'), nombre: nombres[idx], nums, vence: ahora + (6 + Math.floor(rnd() * 110)) * 60000, estado: 'apartado', propio: false });
+  });
+  const bitacora = [
+    { t: ahora - 9 * 60000, txt: 'SM1-0199 · pagado · $150', tipo: 'pago' },
+    { t: ahora - 26 * 60000, txt: 'SM1-0187 · vencido · 2 liberados', tipo: 'lib' },
+    { t: ahora - 41 * 60000, txt: 'SM1-0196 · pagado · $25', tipo: 'pago' },
+  ];
+
+  const tuyos = new Set();
+  let centena = 4;
+  let regla = null;
+  const valores = { termina: '7', contiene: '7', telefono: '', exacto: '', desde: '450', cuantos: '10' };
+
+  // ---------- Reglas ----------
+  const REGLAS = {
+    telefono: { campos: [['telefono', 'Tu número de teléfono', 10, 'ancho', '958 123 4487']], pista: 'Usamos las últimas 3 cifras.',
+      test: (s) => { const d = valores.telefono.replace(/\D/g, ''); return d.length >= 3 ? s === d.slice(-3) : null; } },
+    termina: { campos: [['termina', 'Termina en', 2, '', '7']], pista: 'Una o dos cifras.',
+      test: (s) => valores.termina ? s.endsWith(valores.termina) : null },
+    contiene: { campos: [['contiene', 'Que traiga un', 1, '', '7']], pista: 'En cualquier posición.',
+      test: (s) => valores.contiene ? s.includes(valores.contiene) : null },
+    exacto: { campos: [['exacto', 'Tu número', 3, '', '27']], pista: 'Tu edad, tu casa, tu placa, el día que naciste.',
+      test: (s) => valores.exacto ? s === pad(+valores.exacto) : null },
+    capicua: { campos: [], pista: 'Se leen igual al derecho y al revés: 121, 787, 909.',
+      test: (s) => s[0] === s[2] },
+    seguidos: { campos: [['desde', 'Desde el', 3, '', '450'], ['cuantos', 'Cuántos', 2, '', '10']], pista: 'Una tira de números corridos.',
+      test: (s) => { if (valores.desde === '' || !valores.cuantos) return null; const a = +valores.desde, k = Math.min(+valores.cuantos, 50); return +s >= a && +s < a + k; } },
+  };
+  const coincide = (n) => regla ? REGLAS[regla].test(pad(n)) : null;
+
+  // ---------- Construcción ----------
+  const elCent = $('centenas'), elGrid = $('cuadricula'), elEjeY = $('ejes-y');
+  for (let c = 0; c < 10; c++) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'centena'; b.setAttribute('role', 'tab'); b.dataset.c = c;
+    b.innerHTML = `<span class="rng">${c}00<small>–${c}99</small></span><span class="mini"><i></i></span><span class="badge" hidden></span>`;
+    b.addEventListener('click', () => { centena = c; render(); });
+    elCent.appendChild(b);
+  }
+  for (let r = 0; r < 10; r++) { const s = document.createElement('span'); s.textContent = r; elEjeY.appendChild(s); }
+  const celdas = [];
+  for (let i = 0; i < 100; i++) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'b';
+    b.addEventListener('click', () => tocar(centena * 100 + i));
+    elGrid.appendChild(b); celdas.push(b);
+  }
+
+  function tocar(n) {
+    if (tuyos.has(n)) { tuyos.delete(n); render(); return; }
+    if (estado[n] === 'vendido') return aviso(`El ${pad(n)} ya está vendido.`);
+    if (estado[n] === 'apartado') return aviso(`El ${pad(n)} está apartado. Si no lo pagan, se libera.`);
+    tuyos.add(n); render();
+  }
+
+  let tAviso;
+  function aviso(txt) {
+    const t = $('toast'); t.textContent = txt; t.hidden = false;
+    clearTimeout(tAviso); tAviso = setTimeout(() => { t.hidden = true; }, 2200);
+  }
+
+  // Reglas UI
+  $('reglas').addEventListener('click', (e) => {
+    const b = e.target.closest('.chip'); if (!b) return;
+    regla = regla === b.dataset.regla ? null : b.dataset.regla;
+    pintarCampos(); saltarACoincidencia(); render();
+  });
+  function pintarCampos() {
+    document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-checked', String(c.dataset.regla === regla)));
+    const cfg = $('regla-cfg'); cfg.hidden = !regla;
+    if (!regla) return;
+    const R = REGLAS[regla];
+    $('campos').innerHTML = R.campos.map(([k, label, max, cls, ph]) =>
+      `<label class="campo" for="r-${k}">${label}<input id="r-${k}" data-k="${k}" class="${cls}" inputmode="numeric" maxlength="${max === 10 ? 14 : max}" placeholder="${ph}" value="${valores[k]}"></label>`).join('');
+    $('regla-pista').textContent = R.pista;
+    $('campos').querySelectorAll('input').forEach(inp => inp.addEventListener('input', () => {
+      inp.value = inp.dataset.k === 'telefono' ? inp.value.replace(/[^\d ]/g, '') : inp.value.replace(/\D/g, '');
+      valores[inp.dataset.k] = inp.value.replace(/\s/g, '');
+      saltarACoincidencia(); render();
+    }));
+  }
+  function saltarACoincidencia() {
+    if (!regla) return;
+    const enActual = Array.from({ length: 100 }, (_, i) => centena * 100 + i).some(n => coincide(n) && estado[n] === 'libre' && !tuyos.has(n));
+    if (enActual) return;
+    for (let n = 0; n < N; n++) if (coincide(n) && (estado[n] === 'libre' || tuyos.has(n))) { centena = Math.floor(n / 100); return; }
+    for (let n = 0; n < N; n++) if (coincide(n)) { centena = Math.floor(n / 100); return; }
+  }
+
+  function renderResultado() {
+    const out = $('resultado');
+    if (!regla) { out.innerHTML = ''; return; }
+    const m = [];
+    for (let n = 0; n < N; n++) if (coincide(n)) m.push(n);
+    if (coincide(0) === null && regla !== 'capicua') { out.innerHTML = '<span class="pista">Escribe arriba y te enseñamos cuáles quedan.</span>'; return; }
+    const libres = m.filter(n => estado[n] === 'libre' && !tuyos.has(n));
+    if ((regla === 'telefono' || regla === 'exacto') && m.length === 1) {
+      const n = m[0], s = pad(n);
+      let html;
+      if (tuyos.has(n)) html = `<span class="n">${s}</span><span>Ya es tuyo. Está en tu talón.</span>`;
+      else if (estado[n] === 'libre') html = `<span class="n">${s}</span><span>Está libre.</span><button type="button" class="btn sello" data-agregar="${n}">Lo quiero</button>`;
+      else {
+        const alt = s.slice(1);
+        html = `<span class="n" style="color:var(--tinta-2)">${s}</span><span>Ya ${estado[n] === 'vendido' ? 'se vendió' : 'está apartado'}. <button type="button" class="link" data-alt="${alt}">Ver los que terminan en ${alt}</button></span>`;
+      }
+      out.innerHTML = `<div class="unico" style="width:100%">${html}</div>`;
+      return;
+    }
+    let html = `<span><b class="num">${m.length}</b> cumplen · <b class="num">${libres.length}</b> libres</span>`;
+    if (libres.length && libres.length <= 20) html += `<button type="button" class="btn chico" data-todos="1">Agregar los ${libres.length} libres</button>`;
+    out.innerHTML = html;
+  }
+  $('resultado').addEventListener('click', (e) => {
+    const a = e.target.closest('[data-agregar]'), alt = e.target.closest('[data-alt]'), todos = e.target.closest('[data-todos]');
+    if (a) { tuyos.add(+a.dataset.agregar); render(); }
+    if (alt) { regla = 'termina'; valores.termina = alt.dataset.alt; pintarCampos(); saltarACoincidencia(); render(); }
+    if (todos) { for (let n = 0; n < N; n++) if (coincide(n) && estado[n] === 'libre') tuyos.add(n); render(); }
+  });
+
+  // ---------- Render ----------
+  function render() {
+    // contador
+    let v = 0, a = 0;
+    estado.forEach(s => { if (s === 'vendido') v++; else if (s === 'apartado') a++; });
+    const l = N - v - a;
+    $('r-v').style.width = (v / 10) + '%'; $('r-a').style.width = (a / 10) + '%';
+    $('regla').setAttribute('aria-label', `${v} vendidos, ${a} apartados, ${l} libres de 1,000`);
+    $('contador-txt').innerHTML = `<span><b>${v}</b> vendidos</span><span><b>${a}</b> apartados</span><span><b>${l}</b> libres</span>`;
+
+    // centenas
+    const filtrando = regla && coincide(0) !== null || regla === 'capicua';
+    elCent.querySelectorAll('.centena').forEach((b, c) => {
+      let lib = 0, match = 0;
+      for (let i = c * 100; i < c * 100 + 100; i++) { if (estado[i] === 'libre') { lib++; if (filtrando && coincide(i)) match++; } }
+      b.setAttribute('aria-selected', String(c === centena));
+      b.setAttribute('aria-label', `${c}00 a ${c}99, ${lib} libres`);
+      b.querySelector('.mini i').style.width = lib + '%';
+      const badge = b.querySelector('.badge');
+      badge.hidden = !(filtrando && match); badge.textContent = match;
+    });
+
+    // cuadrícula
+    elGrid.classList.toggle('filtrando', !!filtrando);
+    celdas.forEach((b, i) => {
+      const n = centena * 100 + i, s = pad(n);
+      const st = tuyos.has(n) ? 'tuyo' : estado[n];
+      const m = filtrando ? coincide(n) : null;
+      b.className = 'b ' + st + (filtrando ? (m ? ' dentro' : ' fuera') : '');
+      b.textContent = s;
+      b.setAttribute('aria-label', `Boleto ${s}, ${st === 'tuyo' ? 'elegido por ti' : st}`);
+      b.setAttribute('aria-pressed', String(st === 'tuyo'));
+      b.setAttribute('aria-disabled', String(st === 'vendido' || st === 'apartado'));
+    });
+
+    renderResultado();
+    renderTalon();
+    renderGestion();
+  }
+
+  function renderTalon() {
+    const k = tuyos.size, lista = [...tuyos].sort((x, y) => x - y);
+    $('mis').innerHTML = lista.map(n => `<button type="button" data-quitar="${n}" aria-label="Quitar ${pad(n)}">${pad(n)}<span aria-hidden="true">×</span></button>`).join('');
+    let msg;
+    if (!k) msg = 'Toca un número libre para empezar.';
+    else if (k < 5) msg = `Te ${5 - k === 1 ? 'falta <b>1</b>' : `faltan <b>${5 - k}</b>`} para el sorteo de $1,000.`;
+    else if (k < 10) msg = `Ya entras al sorteo de $1,000. Con <b>${10 - k}</b> más llevas regalo.`;
+    else if (k < 20) msg = `Llevas regalo. Con <b>${20 - k}</b> más te lo llevamos a tu casa.`;
+    else msg = 'Llevas regalo y entrega a domicilio.';
+    if (k) msg = `<span class="num">${k} ${k === 1 ? 'boleto' : 'boletos'} · 1 en ${Math.round(N / k).toLocaleString('es-MX')}</span><br>` + msg;
+    $('talon-msg').innerHTML = msg;
+    const btn = $('btn-apartar');
+    btn.disabled = !k;
+    btn.textContent = k ? `Apartar · ${pesos(k * CFG.precio)}` : 'Apartar';
+    document.querySelectorAll('#escalera li').forEach(li => li.classList.toggle('logrado', k >= +li.dataset.min));
+  }
+  $('mis').addEventListener('click', (e) => { const b = e.target.closest('[data-quitar]'); if (b) { tuyos.delete(+b.dataset.quitar); render(); } });
+
+  // ---------- Hoja de apartado ----------
+  let ultimo = null, focoPrevio = null;
+  $('btn-apartar').addEventListener('click', () => {
+    focoPrevio = document.activeElement;
+    $('resumen-datos').innerHTML = [...tuyos].sort((a, b) => a - b).map(n => `<span class="n">${pad(n)}</span>`).join('') + `<b class="num" style="margin-left:4px">${pesos(tuyos.size * CFG.precio)}</b>`;
+    if (!$('in-wa').value && valores.telefono.length === 10) $('in-wa').value = valores.telefono;
+    $('paso-datos').hidden = false; $('paso-listo').hidden = true; $('form-error').hidden = true;
+    $('velo').hidden = false; $('in-nombre').focus();
+  });
+  const cerrar = () => { $('velo').hidden = true; if (focoPrevio) focoPrevio.focus(); };
+  $('btn-cancelar').addEventListener('click', cerrar);
+  $('btn-cerrar').addEventListener('click', cerrar);
+  $('velo').addEventListener('click', (e) => { if (e.target.id === 'velo') cerrar(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('velo').hidden) cerrar(); });
+
+  $('form-datos').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nombre = $('in-nombre').value.trim(), wa = $('in-wa').value.replace(/\D/g, '');
+    const err = $('form-error');
+    if (!nombre) { err.textContent = 'Escribe tu nombre. Lo usamos para entregarte el premio.'; err.hidden = false; $('in-nombre').focus(); return; }
+    if (wa.length !== 10) { err.textContent = `El WhatsApp lleva 10 dígitos y escribiste ${wa.length}.`; err.hidden = false; $('in-wa').focus(); return; }
+    const nums = [...tuyos].sort((a, b) => a - b);
+    nums.forEach(n => { estado[n] = 'apartado'; });
+    ultimo = { folio: CFG.prefijo + '-' + String(siguienteFolio++).padStart(4, '0'), nombre, nums, vence: Date.now() + CFG.minutos * 60000, estado: 'apartado', propio: true };
+    folios.push(ultimo);
+    bitacora.unshift({ t: Date.now(), txt: `${ultimo.folio} · apartado · ${nums.length} boletos`, tipo: 'ap' });
+    tuyos.clear();
+    const total = pesos(nums.length * CFG.precio);
+    const hora = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+    $('c-folio').textContent = ultimo.folio; $('c-folio2').textContent = ultimo.folio;
+    $('c-nums').innerHTML = nums.map(n => `<span class="n">${pad(n)}</span>`).join('');
+    $('c-total').textContent = `${nums.length} ${nums.length === 1 ? 'boleto' : 'boletos'} · ${total}`;
+    $('c-hora').textContent = hora;
+    $('c-mensaje').textContent = `Hola, aparté en Solo Mil, rifa #1.\nFolio: ${ultimo.folio}\nNúmeros: ${nums.map(pad).join(', ')}\nTotal: ${total}\nA nombre de: ${nombre}\nAquí va mi comprobante:`;
+    $('paso-datos').hidden = true; $('paso-listo').hidden = false;
+    tic(); render();
+    $('hoja').scrollTop = 0;
+  });
+
+  async function copiar(texto, btn, ok) {
+    try { await navigator.clipboard.writeText(texto); const t = btn.textContent; btn.textContent = ok; setTimeout(() => { btn.textContent = t; }, 1600); }
+    catch { aviso('No se pudo copiar. Mantén presionado el texto para copiarlo.'); }
+  }
+  document.querySelectorAll('[data-copiar]').forEach(b => b.addEventListener('click', () => copiar($(b.dataset.copiar).textContent.replace(/\s/g, ''), b, 'Copiada')));
+  $('btn-wa').addEventListener('click', (e) => copiar($('c-mensaje').textContent, e.currentTarget, 'Mensaje copiado'));
+
+  // ---------- Gestión ----------
+  function renderGestion() {
+    const hoy = Date.now();
+    let v = 0, a = 0; estado.forEach(s => { if (s === 'vendido') v++; else if (s === 'apartado') a++; });
+    const falta = CFG.equilibrio - v;
+    $('tablero').innerHTML =
+      `<div class="cifra"><b>${v}</b><span>vendidos · ${pesos(v * CFG.precio)} cobrado</span></div>` +
+      `<div class="cifra"><b>${a}</b><span>apartados · ${pesos(a * CFG.precio)} por cobrar</span></div>` +
+      `<div class="cifra"><b>${N - v - a}</b><span>libres</span></div>` +
+      `<div class="cifra ${falta <= 0 ? 'ok' : ''}"><b>${falta <= 0 ? '+' + (-falta) : falta}</b><span>${falta <= 0 ? 'sobre el punto de equilibrio (480)' : 'para el punto de equilibrio (480)'}</span></div>`;
+    const pend = folios.filter(f => f.estado === 'apartado').sort((x, y) => x.vence - y.vence);
+    $('por-conciliar').innerHTML = pend.map(f => {
+      const min = Math.max(0, Math.round((f.vence - hoy) / 60000));
+      const vence = min >= 60 ? `vence en ${Math.floor(min / 60)} h ${min % 60} min` : `vence en ${min} min`;
+      return `<li class="fol ${min < 20 ? 'urge' : ''} ${f.propio ? 'propio' : ''}">
+        <div class="fol-cab"><span class="folio">${f.folio}</span><span class="vence">${vence}</span></div>
+        <div>${f.nombre}${f.propio ? ' · <b>tu prueba</b>' : ''}</div>
+        <div class="fol-nums">${f.nums.map(pad).join(' · ')}</div>
+        <div class="fol-acc"><span class="monto num">${pesos(f.nums.length * CFG.precio)}</span>
+          <div><button type="button" class="btn linea chico" data-liberar="${f.folio}">Liberar</button><button type="button" class="btn ok chico" data-pagado="${f.folio}">Ya pagó</button></div></div>
+      </li>`;
+    }).join('') || '<li class="pista">No hay nada por conciliar.</li>';
+    $('bitacora').innerHTML = bitacora.map(b => `<li class="${b.tipo === 'lib' ? 'lib' : ''}">${new Date(b.t).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })} · ${b.tipo === 'pago' ? '<b>✓</b> ' : b.tipo === 'lib' ? '<b>↺</b> ' : '· '}${b.txt}</li>`).join('');
+  }
+  $('por-conciliar').addEventListener('click', (e) => {
+    const p = e.target.closest('[data-pagado]'), l = e.target.closest('[data-liberar]');
+    const f = folios.find(x => x.folio === (p || l)?.dataset[p ? 'pagado' : 'liberar']);
+    if (!f) return;
+    if (p) { f.estado = 'pagado'; f.nums.forEach(n => { estado[n] = 'vendido'; }); bitacora.unshift({ t: Date.now(), txt: `${f.folio} · pagado · ${pesos(f.nums.length * CFG.precio)}`, tipo: 'pago' }); aviso(`${f.folio}: ${f.nums.length} vendidos.`); }
+    else { f.estado = 'liberado'; f.nums.forEach(n => { estado[n] = 'libre'; }); bitacora.unshift({ t: Date.now(), txt: `${f.folio} · liberado a mano · ${f.nums.length} libres`, tipo: 'lib' }); }
+    render();
+  });
+
+  // Vista
+  function vista(g) {
+    $('vista-cliente').hidden = g; $('vista-gestion').hidden = !g;
+    $('v-cliente').setAttribute('aria-pressed', String(!g)); $('v-gestion').setAttribute('aria-pressed', String(g));
+  }
+  $('v-cliente').addEventListener('click', () => vista(false));
+  $('v-gestion').addEventListener('click', () => vista(true));
+
+  // Reloj: cuenta regresiva y vencimiento automático
+  function tic() {
+    const hoy = Date.now();
+    let cambio = false;
+    folios.forEach(f => {
+      if (f.estado === 'apartado' && f.vence <= hoy) {
+        f.estado = 'vencido'; f.nums.forEach(n => { estado[n] = 'libre'; }); cambio = true;
+        bitacora.unshift({ t: hoy, txt: `${f.folio} · vencido · ${f.nums.length} liberados`, tipo: 'lib' });
+      }
+    });
+    if (ultimo) {
+      const s = Math.max(0, Math.round((ultimo.vence - hoy) / 1000));
+      $('c-reloj').textContent = `${Math.floor(s / 3600)}:${String(Math.floor(s % 3600 / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+    }
+    if (cambio) render();
+  }
+  setInterval(tic, 1000);
+  setInterval(renderGestion, 30000);
+
+  // Estado inicial: una regla de ejemplo ya puesta para que se vea el buscador
+  regla = 'termina'; pintarCampos(); saltarACoincidencia();
+  for (let n = centena * 100; n < centena * 100 + 100 && tuyos.size < 2; n++) if (coincide(n) && estado[n] === 'libre') tuyos.add(n);
+  render();
+})();
+</script>
+</body>
+</html>

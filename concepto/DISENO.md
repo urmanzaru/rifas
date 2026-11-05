@@ -130,6 +130,9 @@ La vista de conciliación es una lista de folios **ordenada por lo que vence pri
 | `--sello` | `#CF3519` | `#FF6847` | Lo tuyo, la acción principal. |
 | `--pacifico` | `#0B7A6F` | `#3CC4B2` | Pagado, confirmado, a tiempo. |
 | `--apartado` | `#C2860A` | `#E3AE3A` | Rayado de apartado. Nunca como relleno sólido. |
+| `--sello-texto` | `#B02A12` | `#FF6847` | Rojo sello para **texto chico** (sello del comprobante, errores, DESHACE). El `--sello` normal no llega a 4.5:1 sobre cartulina. |
+| `--apartado-tx` | `#85590A` | `#E3AE3A` | Ámbar para **texto** (VENCE, LIBERA en el registro). El `--apartado` es solo para rayados y contornos. |
+| `--burbuja` | `#DCF4D9` | `#1F4A3A` | Burbuja del mensaje de WhatsApp. |
 
 **Regla de uso:** el rojo sello solo aparece en lo que es tuyo o en lo que tienes que hacer. Si todo es rojo, nada es urgente. Los avisos neutros ("El 487 ya está vendido") van en añil, no en rojo.
 

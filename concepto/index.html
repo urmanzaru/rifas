@@ -23,6 +23,8 @@
   --pacifico: #0B7A6F;  /* confirmado, pagado, a tiempo */
   --apartado: #C2860A;  /* rayado de apartado */
   --sobre-tinta: #F3F5F1;
+  --sello-texto: #B02A12;   /* rojo sello para texto chico sobre papel o cartulina (≥5.4:1) */
+  --apartado-tx: #85590A;   /* ámbar de apartado para texto (≥5:1) */
   --burbuja: #DCF4D9;   /* burbuja de WhatsApp */
   --burbuja-tx: #10240F;
 
@@ -38,7 +40,7 @@
     --papel: #101828; --carton: #19243A; --mesa: #0A111D;
     --tinta: #E9EDF3; --tinta-2: #9DA9BC; --linea: #E9EDF32B;
     --sello: #FF6847; --sello-tx: #1A0905;
-    --pacifico: #3CC4B2; --apartado: #E3AE3A; --sobre-tinta: #101828; --burbuja: #1F4A3A; --burbuja-tx: #E6F4EA;
+    --pacifico: #3CC4B2; --apartado: #E3AE3A; --sobre-tinta: #101828; --burbuja: #1F4A3A; --burbuja-tx: #E6F4EA; --sello-texto: #FF6847; --apartado-tx: #E3AE3A;
     color-scheme: dark;
   }
 }
@@ -46,12 +48,13 @@
   --papel: #101828; --carton: #19243A; --mesa: #0A111D;
   --tinta: #E9EDF3; --tinta-2: #9DA9BC; --linea: #E9EDF32B;
   --sello: #FF6847; --sello-tx: #1A0905;
-  --pacifico: #3CC4B2; --apartado: #E3AE3A; --sobre-tinta: #101828; --burbuja: #1F4A3A; --burbuja-tx: #E6F4EA;
+  --pacifico: #3CC4B2; --apartado: #E3AE3A; --sobre-tinta: #101828; --burbuja: #1F4A3A; --burbuja-tx: #E6F4EA; --sello-texto: #FF6847; --apartado-tx: #E3AE3A;
   color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
+::placeholder { color: var(--tinta-2); opacity: 1; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--papel); color: var(--tinta);
@@ -65,7 +68,7 @@ button { cursor: pointer; }
 .eyebrow { font-size: .75rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-2); }
 h1, h2, h3 { font-family: var(--f-display); font-weight: 900; line-height: .95; margin: 0; text-wrap: balance; letter-spacing: .005em; }
 h2 { font-size: 2rem; text-transform: uppercase; }
-p { margin: 0; }
+p { margin: 0; text-wrap: pretty; }
 
 /* ---------- Estructura de la página ---------- */
 .franja {
@@ -157,7 +160,7 @@ p { margin: 0; }
 .evidencia figcaption { font-size: .875rem; color: var(--tinta-2); }
 .sello-goma {
   position: absolute; top: 18px; right: 14px; transform: rotate(-7deg);
-  border: 2.5px solid var(--sello); color: var(--sello); border-radius: 4px;
+  border: 2.5px solid var(--sello-texto); color: var(--sello-texto); border-radius: 4px;
   font-family: var(--f-display); font-weight: 900; font-size: 1.05rem; line-height: 1; padding: 5px 8px 4px; text-transform: uppercase; text-align: center;
 }
 .sello-goma small { display: block; font-family: var(--f-folio); font-size: .7rem; font-weight: 700; letter-spacing: .04em; margin-top: 2px; }
@@ -345,7 +348,7 @@ p { margin: 0; }
 .hoja h2 { font-size: 2.2rem; }
 .hoja form { display: grid; gap: 12px; }
 .hoja .campo input { width: 100%; font-family: var(--f-texto); font-weight: 400; font-size: 1.05rem; letter-spacing: 0; }
-.error { color: var(--sello); font-size: .875rem; font-weight: 700; }
+.error { color: var(--sello-texto); font-size: .875rem; font-weight: 700; }
 .resumen { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .resumen .n { background: var(--sello); color: var(--sello-tx); font-family: var(--f-display); font-weight: 900; font-size: 1.1rem; padding: 2px 8px; border-radius: 3px; }
 
@@ -439,8 +442,8 @@ p { margin: 0; }
 .bitacora li { padding: 4px 0; border-bottom: 1px dotted var(--linea); overflow-wrap: anywhere; display: grid; grid-template-columns: 3.4rem 4.6rem minmax(0, 1fr); gap: 6px; }
 .bitacora .tag { font-weight: 700; }
 .bitacora .t-pago { color: var(--pacifico); }
-.bitacora .t-libera, .bitacora .t-vence { color: var(--apartado); }
-.bitacora .t-deshace { color: var(--sello); }
+.bitacora .t-libera, .bitacora .t-vence { color: var(--apartado-tx); }
+.bitacora .t-deshace { color: var(--sello-texto); }
 
 /* ---------- Notas del concepto ---------- */
 .notas { display: grid; gap: 28px; font-size: .9375rem; }

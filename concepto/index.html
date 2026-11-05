@@ -399,14 +399,36 @@ p { margin: 0; }
 .fol-cab .vence { font-size: .8125rem; font-weight: 700; color: var(--tinta-2); }
 .fol.urge .vence { color: var(--sello); }
 .fol-nums { font-family: var(--f-display); font-weight: 800; font-size: 1.05rem; letter-spacing: .03em; overflow-wrap: anywhere; }
-.fol-acc { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
-.fol-acc .monto { font-family: var(--f-display); font-weight: 900; font-size: 1.4rem; }
-.fol-acc div { display: flex; gap: 6px; }
+.fol-datos { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 10px; font-size: .875rem; margin: 0; }
+.fol-datos dt { color: var(--tinta-2); }
+.fol-datos dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.fol-datos .folio { font-weight: 700; }
+.fol-acc { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-top: 2px; }
+.fol-acc .link { min-height: 44px; color: var(--tinta-2); }
 .btn.ok { background: var(--pacifico); color: var(--papel); }
-.bitacora { list-style: none; margin: 0; padding: 0; font-family: var(--f-folio); font-size: .8125rem; display: grid; gap: 2px; max-height: 220px; overflow-y: auto; }
-.bitacora li { padding: 4px 0; border-bottom: 1px dotted var(--linea); overflow-wrap: anywhere; }
-.bitacora li b { color: var(--pacifico); }
-.bitacora li.lib b { color: var(--apartado); }
+.confirmar { display: grid; gap: 8px; background: var(--carton); border-radius: 4px; padding: 10px; font-size: .875rem; }
+.confirmar div { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn.peligro { background: var(--sello); color: var(--sello-tx); }
+.fol.cerrado { border-left-color: var(--linea); background: var(--carton); }
+.fol .etiqueta { font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tinta-2); }
+.buscar { display: grid; gap: 4px; font-size: .8125rem; font-weight: 700; }
+.buscar input {
+  border: 1.5px solid var(--tinta); border-radius: 4px; background: var(--papel); padding: 10px 12px; min-height: 44px;
+  font-size: 1rem; width: 100%;
+}
+.deshacer {
+  position: sticky; bottom: 0; z-index: 5; margin-top: 8px;
+  background: var(--tinta); color: var(--sobre-tinta); border-radius: 8px 8px 0 0;
+  padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: .875rem;
+}
+.deshacer .btn { background: var(--sobre-tinta); color: var(--tinta); white-space: nowrap; }
+.bitacora { list-style: none; margin: 0; padding: 0; font-family: var(--f-folio); font-size: .8125rem; display: grid; gap: 2px; max-height: 260px; overflow-y: auto; }
+.bitacora li { padding: 4px 0; border-bottom: 1px dotted var(--linea); overflow-wrap: anywhere; display: grid; grid-template-columns: 3.4rem 4.6rem minmax(0, 1fr); gap: 6px; }
+.bitacora .tag { font-weight: 700; }
+.bitacora .t-pago { color: var(--pacifico); }
+.bitacora .t-libera, .bitacora .t-vence { color: var(--apartado); }
+.bitacora .t-deshace { color: var(--sello); }
 
 /* ---------- Notas del concepto ---------- */
 .notas { display: grid; gap: 28px; font-size: .9375rem; }
@@ -621,14 +643,21 @@ p { margin: 0; }
         <div class="tablero num" id="tablero"></div>
         <section class="seccion" aria-labelledby="h-conc">
           <h2 id="h-conc">Por conciliar</h2>
-          <p class="pista">Revisa la transferencia en el banco y marca el folio. Un toque. Lo que vence solo se libera.</p>
+          <p class="pista">Revisa que la transferencia llegó al banco y marca el folio. Lo que vence se libera solo.</p>
+          <label class="buscar" for="g-buscar">Buscar folio, nombre, WhatsApp o número de boleto
+            <input id="g-buscar" type="search" autocomplete="off" placeholder="Ej. 0214, Lupita, 487">
+          </label>
           <ul class="por-conciliar" id="por-conciliar"></ul>
         </section>
         <section class="seccion" aria-labelledby="h-bit">
           <h2 id="h-bit">Registro</h2>
-          <p class="pista">Cada movimiento queda guardado. No se edita ni se borra.</p>
+          <p class="pista">Cada movimiento queda guardado. No se edita ni se borra; deshacer agrega otra línea.</p>
           <ul class="bitacora" id="bitacora"></ul>
         </section>
+        <div class="deshacer" id="deshacer" role="status" hidden>
+          <span id="deshacer-txt"></span>
+          <button type="button" class="btn chico" id="btn-deshacer">Deshacer</button>
+        </div>
       </div>
     </div>
   </main>
@@ -786,12 +815,12 @@ p { margin: 0; }
     const nums = [];
     while (nums.length < k) { const n = Math.floor(rnd() * N); if (estado[n] === 'libre') { estado[n] = 'apartado'; nums.push(n); } }
     nums.sort((a, b) => a - b);
-    folios.push({ folio: CFG.prefijo + '-' + String(siguienteFolio++).padStart(4, '0'), nombre: nombres[idx], nums, vence: ahora + (6 + Math.floor(rnd() * 110)) * 60000, estado: 'apartado', propio: false });
+    folios.push({ folio: CFG.prefijo + '-' + String(siguienteFolio++).padStart(4, '0'), nombre: nombres[idx], wa: '9580000' + String(101 + idx * 37).padStart(3, '0'), nums, vence: ahora + (6 + Math.floor(rnd() * 110)) * 60000, estado: 'apartado', propio: false });
   });
   const bitacora = [
-    { t: ahora - 9 * 60000, txt: 'SM1-0199 · pagado · $150', tipo: 'pago' },
-    { t: ahora - 26 * 60000, txt: 'SM1-0187 · vencido · 2 liberados', tipo: 'lib' },
-    { t: ahora - 41 * 60000, txt: 'SM1-0196 · pagado · $25', tipo: 'pago' },
+    { t: ahora - 9 * 60000, txt: 'SM1-0199 · $150', tipo: 'pago' },
+    { t: ahora - 26 * 60000, txt: 'SM1-0187 · 2 números libres', tipo: 'vence' },
+    { t: ahora - 41 * 60000, txt: 'SM1-0196 · $25', tipo: 'pago' },
   ];
 
   // ---------- Mis apartados (guardados en este teléfono) ----------
@@ -1049,7 +1078,7 @@ p { margin: 0; }
     const ap = { folio: CFG.prefijo + '-' + String(siguienteFolio++).padStart(4, '0'), nombre, wa, nums, creado: Date.now(), vence: Date.now() + CFG.minutos * 60000, estado: 'apartado', propio: true };
     folios.push(ap);
     guardarApartados();
-    bitacora.unshift({ t: Date.now(), txt: `${ap.folio} · apartado · ${nums.length} boletos`, tipo: 'ap' });
+    bitacora.unshift({ t: Date.now(), txt: `${ap.folio} · ${nums.length} ${nums.length === 1 ? 'número' : 'números'}`, tipo: 'aparta' });
     tuyos.clear();
     try { location.hash = ap.folio; } catch { /* el link sigue en el mensaje */ }
     render();
@@ -1080,7 +1109,7 @@ p { margin: 0; }
   $('btn-transferi').addEventListener('click', () => {
     if (ultimo && ultimo.estado === 'apartado') {
       ultimo.estado = 'transferido'; guardarApartados();
-      bitacora.unshift({ t: Date.now(), txt: `${ultimo.folio} · cliente dice que ya transfirió`, tipo: 'ap' });
+      bitacora.unshift({ t: Date.now(), txt: `${ultimo.folio} · el cliente dice que ya transfirió`, tipo: 'avisa' });
     }
     cerrar(); render();
   });
@@ -1104,6 +1133,45 @@ p { margin: 0; }
   $('btn-wa').addEventListener('click', (e) => copiar($('c-mensaje').textContent, e.currentTarget, 'Mensaje copiado', $('c-mensaje')));
 
   // ---------- Gestión ----------
+  const TAG = { pago: 'PAGO', libera: 'LIBERA', vence: 'VENCE', deshace: 'DESHACE', aparta: 'APARTA', avisa: 'AVISA' };
+  const normal = (t) => String(t).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const telefono = (wa) => { const d = String(wa || '').replace(/\D/g, ''); return d.length === 10 ? `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6)}` : (d || 'sin número'); };
+  let busqueda = '', confirmando = null, ultimaAccion = null, tDeshacer;
+  const ESTADO_TXT = { pagado: 'Pagado', vencido: 'Venció', liberado: 'Liberado a mano', descartado: 'Venció' };
+
+  function coincideBusqueda(f) {
+    if (!busqueda) return true;
+    const q = normal(busqueda.trim()), qd = q.replace(/\D/g, '');
+    if (normal(f.folio).includes(q) || normal(f.nombre).includes(q)) return true;
+    if (qd.length >= 4 && String(f.wa || '').includes(qd)) return true;
+    return qd.length > 0 && qd.length <= 3 && f.nums.some(n => pad(n).endsWith(qd));
+  }
+
+  function tarjeta(f, hoy) {
+    const monto = pesos(f.nums.length * CFG.precio);
+    const cab = (extra) => `<div class="fol-cab"><span class="folio">${f.folio}</span>${extra}</div>
+        <dl class="fol-datos">
+          <dt>Nombre</dt><dd>${f.nombre}${f.propio ? ' · <b>tu prueba</b>' : ''}</dd>
+          <dt>WhatsApp</dt><dd class="folio">${telefono(f.wa)}</dd>
+          <dt>Números</dt><dd class="fol-nums">${f.nums.map(pad).join(' · ')}</dd>
+          <dt>Debe llegar</dt><dd class="folio">${monto}.00</dd>
+        </dl>`;
+    if (!PENDIENTE(f)) return `<li class="fol cerrado">${cab(`<span class="etiqueta">${ESTADO_TXT[f.estado] || f.estado}</span>`)}</li>`;
+    const min = Math.max(0, Math.round((f.vence - hoy) / 60000));
+    const vence = min >= 60 ? `vence en ${Math.floor(min / 60)} h ${min % 60} min` : `vence en ${min} min`;
+    const acciones = confirmando === f.folio
+      ? `<div class="confirmar" role="group" aria-label="Confirmar liberar ${f.folio}">
+           <p>¿Liberar ${f.folio}? Sus ${f.nums.length} ${f.nums.length === 1 ? 'número vuelve' : 'números vuelven'} a estar libres y ${f.nombre} pierde su apartado.</p>
+           <div><button type="button" class="btn peligro chico" data-liberar-si="${f.folio}">Sí, liberar</button><button type="button" class="btn linea chico" data-liberar-no="${f.folio}">No, dejarlo</button></div>
+         </div>`
+      : `<div class="fol-acc"><button type="button" class="link" data-liberar="${f.folio}">Liberar números</button>
+           <button type="button" class="btn ok" data-pagado="${f.folio}">Ya pagó ${monto}</button></div>`;
+    return `<li class="fol ${min < 20 ? 'urge' : ''} ${f.propio ? 'propio' : ''}">
+        ${cab(`<span class="vence">${f.estado === 'transferido' ? 'dice que ya transfirió · ' : ''}${vence}</span>`)}
+        ${acciones}
+      </li>`;
+  }
+
   function renderGestion() {
     const hoy = Date.now();
     let v = 0, a = 0; estado.forEach(s => { if (s === 'vendido') v++; else if (s === 'apartado') a++; });
@@ -1113,28 +1181,63 @@ p { margin: 0; }
       `<div class="cifra"><b>${a}</b><span>apartados · ${pesos(a * CFG.precio)} por cobrar</span></div>` +
       `<div class="cifra"><b>${N - v - a}</b><span>libres</span></div>` +
       `<div class="cifra ${falta <= 0 ? 'ok' : ''}"><b>${falta <= 0 ? '+' + (-falta) : falta}</b><span>${falta <= 0 ? 'sobre el punto de equilibrio (480)' : 'para el punto de equilibrio (480)'}</span></div>`;
-    const pend = folios.filter(PENDIENTE).sort((x, y) => x.vence - y.vence);
-    $('por-conciliar').innerHTML = pend.map(f => {
-      const min = Math.max(0, Math.round((f.vence - hoy) / 60000));
-      const vence = min >= 60 ? `vence en ${Math.floor(min / 60)} h ${min % 60} min` : `vence en ${min} min`;
-      return `<li class="fol ${min < 20 ? 'urge' : ''} ${f.propio ? 'propio' : ''}">
-        <div class="fol-cab"><span class="folio">${f.folio}</span><span class="vence">${vence}</span></div>
-        <div>${f.nombre}${f.propio ? ' · <b>tu prueba</b>' : ''}${f.estado === 'transferido' ? ' · dice que ya transfirió' : ''}</div>
-        <div class="fol-nums">${f.nums.map(pad).join(' · ')}</div>
-        <div class="fol-acc"><span class="monto num">${pesos(f.nums.length * CFG.precio)}</span>
-          <div><button type="button" class="btn linea chico" data-liberar="${f.folio}">Liberar</button><button type="button" class="btn ok chico" data-pagado="${f.folio}">Ya pagó</button></div></div>
-      </li>`;
-    }).join('') || '<li class="pista">No hay nada por conciliar.</li>';
-    $('bitacora').innerHTML = bitacora.map(b => `<li class="${b.tipo === 'lib' ? 'lib' : ''}">${new Date(b.t).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })} · ${b.tipo === 'pago' ? '<b>✓</b> ' : b.tipo === 'lib' ? '<b>↺</b> ' : '· '}${b.txt}</li>`).join('');
+    const pend = folios.filter(f => PENDIENTE(f) && coincideBusqueda(f)).sort((x, y) => x.vence - y.vence);
+    const cerrados = busqueda ? folios.filter(f => !PENDIENTE(f) && coincideBusqueda(f)) : [];
+    let html = pend.map(f => tarjeta(f, hoy)).join('');
+    if (cerrados.length) html += `<li class="etiqueta">Ya cerrados</li>` + cerrados.map(f => tarjeta(f, hoy)).join('');
+    if (!html) html = busqueda
+      ? `<li class="pista">Ningún folio coincide con “${busqueda.replace(/[<>&]/g, '')}”. Revisa el folio en el comprobante o busca por nombre.</li>`
+      : '<li class="pista">No hay nada por conciliar.</li>';
+    $('por-conciliar').innerHTML = html;
+    $('bitacora').innerHTML = bitacora.map(b => `<li><span>${new Date(b.t).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', hour12: false })}</span><span class="tag t-${b.tipo}">${TAG[b.tipo] || ''}</span><span>${b.txt}</span></li>`).join('');
   }
+  $('g-buscar').addEventListener('input', (e) => { busqueda = e.target.value; confirmando = null; renderGestion(); });
+
+  function mostrarDeshacer(txt) {
+    $('deshacer-txt').textContent = txt; $('deshacer').hidden = false;
+    clearTimeout(tDeshacer); tDeshacer = setTimeout(() => {
+      const teniaFoco = document.activeElement === $('btn-deshacer');
+      $('deshacer').hidden = true; ultimaAccion = null;
+      if (teniaFoco) $('g-buscar').focus();
+    }, 8000);
+  }
+  $('btn-deshacer').addEventListener('click', () => {
+    const u = ultimaAccion; if (!u) return;
+    const f = folios.find(x => x.folio === u.folio);
+    // Solo se deshace si nadie más tomó esos números mientras tanto
+    if (u.tipo === 'libera' && f.nums.some(n => estado[n] !== 'libre' || tuyos.has(n))) {
+      $('deshacer-txt').textContent = `No se puede deshacer: alguien ya apartó uno de esos números.`; ultimaAccion = null; return;
+    }
+    f.estado = u.antes; f.nums.forEach(n => { estado[n] = 'apartado'; });
+    bitacora.unshift({ t: Date.now(), txt: `${f.folio} · se deshizo ${u.tipo === 'pago' ? 'el pago' : 'la liberación'}`, tipo: 'deshace' });
+    if (f.propio) guardarApartados();
+    ultimaAccion = null; clearTimeout(tDeshacer); $('deshacer').hidden = true;
+    render();
+    const card = $('por-conciliar').querySelector(`[data-pagado="${f.folio}"]`); if (card) card.focus();
+  });
+
   $('por-conciliar').addEventListener('click', (e) => {
-    const p = e.target.closest('[data-pagado]'), l = e.target.closest('[data-liberar]');
-    const f = folios.find(x => x.folio === (p || l)?.dataset[p ? 'pagado' : 'liberar']);
-    if (!f) return;
-    if (p) { f.estado = 'pagado'; f.nums.forEach(n => { estado[n] = 'vendido'; }); bitacora.unshift({ t: Date.now(), txt: `${f.folio} · pagado · ${pesos(f.nums.length * CFG.precio)}`, tipo: 'pago' }); aviso(`${f.folio}: ${f.nums.length} vendidos.`); }
-    else { f.estado = 'liberado'; f.nums.forEach(n => { estado[n] = 'libre'; }); bitacora.unshift({ t: Date.now(), txt: `${f.folio} · liberado a mano · ${f.nums.length} libres`, tipo: 'lib' }); }
+    const b = e.target.closest('button'); if (!b) return;
+    const id = b.dataset.pagado || b.dataset.liberar || b.dataset.liberarSi || b.dataset.liberarNo;
+    const f = folios.find(x => x.folio === id); if (!f) return;
+    if ('liberar' in b.dataset) { confirmando = f.folio; renderGestion(); $('por-conciliar').querySelector(`[data-liberar-no="${f.folio}"]`).focus(); return; }
+    if ('liberarNo' in b.dataset) { confirmando = null; renderGestion(); $('por-conciliar').querySelector(`[data-liberar="${f.folio}"]`).focus(); return; }
+    const antes = f.estado;
+    if ('pagado' in b.dataset) {
+      f.estado = 'pagado'; f.nums.forEach(n => { estado[n] = 'vendido'; });
+      bitacora.unshift({ t: Date.now(), txt: `${f.folio} · ${pesos(f.nums.length * CFG.precio)}`, tipo: 'pago' });
+      ultimaAccion = { tipo: 'pago', folio: f.folio, antes };
+      mostrarDeshacer(`${f.folio} pagado. ${f.nums.length} ${f.nums.length === 1 ? 'número vendido' : 'números vendidos'}.`);
+    } else {
+      f.estado = 'liberado'; f.nums.forEach(n => { estado[n] = 'libre'; });
+      bitacora.unshift({ t: Date.now(), txt: `${f.folio} · a mano · ${f.nums.length} ${f.nums.length === 1 ? 'número libre' : 'números libres'}`, tipo: 'libera' });
+      ultimaAccion = { tipo: 'libera', folio: f.folio, antes };
+      mostrarDeshacer(`${f.folio} liberado. ${f.nums.length} ${f.nums.length === 1 ? 'número libre' : 'números libres'}.`);
+    }
+    confirmando = null;
     if (f.propio) guardarApartados();
     render();
+    $('btn-deshacer').focus();
   });
 
   // Vista
@@ -1153,7 +1256,7 @@ p { margin: 0; }
       if (PENDIENTE(f) && f.vence <= hoy) {
         f.estado = 'vencido'; f.nums.forEach(n => { estado[n] = 'libre'; }); cambio = true;
         if (f.propio) guardarApartados();
-        bitacora.unshift({ t: hoy, txt: `${f.folio} · vencido · ${f.nums.length} liberados`, tipo: 'lib' });
+        bitacora.unshift({ t: hoy, txt: `${f.folio} · ${f.nums.length} ${f.nums.length === 1 ? 'número libre' : 'números libres'}`, tipo: 'vence' });
       }
     });
     if (ultimo) $('c-reloj').textContent = reloj(ultimo.vence - hoy);

@@ -93,7 +93,13 @@ Para pagar, el comprador sale a la app de su banco, y el navegador de Facebook m
 - Si el navegador bloquea el almacenamiento, todo sigue funcionando mientras la página esté abierta.
 
 ### 9. Gestión con el mismo papel
-La vista de conciliación es una lista de folios **ordenada por lo que vence primero**, con borde rojo cuando faltan menos de 20 min, y dos botones: "Ya pagó" y "Liberar". Debajo, el **registro**: cada movimiento con hora, que no se edita ni se borra.
+La vista de conciliación es una lista de folios **ordenada por lo que vence primero**, con borde rojo cuando faltan menos de 20 min. Quien concilia la usa con el banco en una mano y WhatsApp en la otra, así que:
+
+- **Búsqueda** por folio, nombre, WhatsApp o número de boleto. Al buscar también aparecen los folios ya cerrados (pagados, vencidos, liberados), sin botones, para resolver "dice que pagó pero ya no aparece".
+- **Cada tarjeta** muestra nombre, WhatsApp, números y **cuánto debe llegar** (`$75.00`), para compararlo con el banco.
+- **"Ya pagó $75"** es el botón principal. **"Liberar números"** queda del otro lado, como enlace, y pide confirmación dentro de la misma tarjeta, diciendo qué pasa ("Sus 3 números vuelven a estar libres y Lupita R. pierde su apartado").
+- **Deshacer** durante 8 segundos después de marcar pagado o liberar, en una barra dentro de Gestión. Deshacer no borra nada: agrega otra línea al registro. Si alguien ya apartó uno de esos números, no deja deshacer y lo dice.
+- **Registro** con hora y una etiqueta de texto por movimiento: APARTA, AVISA, PAGO, LIBERA, VENCE, DESHACE.
 
 ---
 

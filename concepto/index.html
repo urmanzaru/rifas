@@ -23,6 +23,8 @@
   --pacifico: #0B7A6F;  /* confirmado, pagado, a tiempo */
   --apartado: #C2860A;  /* rayado de apartado */
   --sobre-tinta: #F3F5F1;
+  --burbuja: #DCF4D9;   /* burbuja de WhatsApp */
+  --burbuja-tx: #10240F;
 
   --f-display: "Sofia Sans Extra Condensed", "Roboto Condensed", "Arial Narrow", sans-serif;
   --f-texto:   "Atkinson Hyperlegible", Roboto, "Segoe UI", system-ui, sans-serif;
@@ -36,7 +38,7 @@
     --papel: #101828; --carton: #19243A; --mesa: #0A111D;
     --tinta: #E9EDF3; --tinta-2: #9DA9BC; --linea: #E9EDF32B;
     --sello: #FF6847; --sello-tx: #1A0905;
-    --pacifico: #3CC4B2; --apartado: #E3AE3A; --sobre-tinta: #101828;
+    --pacifico: #3CC4B2; --apartado: #E3AE3A; --sobre-tinta: #101828; --burbuja: #1F4A3A; --burbuja-tx: #E6F4EA;
     color-scheme: dark;
   }
 }
@@ -44,7 +46,7 @@
   --papel: #101828; --carton: #19243A; --mesa: #0A111D;
   --tinta: #E9EDF3; --tinta-2: #9DA9BC; --linea: #E9EDF32B;
   --sello: #FF6847; --sello-tx: #1A0905;
-  --pacifico: #3CC4B2; --apartado: #E3AE3A; --sobre-tinta: #101828;
+  --pacifico: #3CC4B2; --apartado: #E3AE3A; --sobre-tinta: #101828; --burbuja: #1F4A3A; --burbuja-tx: #E6F4EA;
   color-scheme: dark;
 }
 
@@ -292,7 +294,7 @@ p { margin: 0; }
 }
 .talon-fila { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .talon .msg { font-size: .875rem; line-height: 1.3; min-width: 0; }
-.talon .msg b { color: var(--sello); }
+.talon .msg b { color: inherit; text-decoration: underline 2px var(--sello); text-underline-offset: 3px; }
 .mis { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; min-height: 0; }
 .mis:empty { display: none; }
 .mis button {
@@ -319,7 +321,7 @@ p { margin: 0; }
 
 .toast {
   position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); width: max-content; max-width: 92%;
-  background: var(--sello); color: var(--sello-tx); padding: 8px 14px; border-radius: 4px; font-weight: 700; font-size: .875rem;
+  background: var(--tinta); color: var(--sobre-tinta); border: 1.5px solid var(--sobre-tinta); padding: 8px 14px; border-radius: 4px; font-weight: 700; font-size: .875rem;
 }
 
 /* ---------- Hoja de apartado ---------- */
@@ -354,7 +356,7 @@ p { margin: 0; }
 .dato { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .dato code { font-family: var(--f-folio); font-weight: 700; font-size: 1rem; background: var(--carton); padding: 4px 8px; border-radius: 3px; overflow-wrap: anywhere; }
 .burbuja {
-  background: #DCF4D9; color: #10240F; border-radius: 8px 8px 8px 2px; padding: 10px 12px; font-size: .875rem; white-space: pre-line; max-width: 300px;
+  background: var(--burbuja); color: var(--burbuja-tx); border-radius: 8px 8px 8px 2px; padding: 10px 12px; font-size: .875rem; white-space: pre-line; max-width: 300px;
   box-shadow: 0 1px 0 #0000001A; overflow-wrap: anywhere;
 }
 .aviso { font-size: .8125rem; color: var(--tinta-2); }
@@ -364,7 +366,7 @@ p { margin: 0; }
 .ficha dt { grid-area: dt; font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tinta-2); }
 .ficha dd { grid-area: dd; margin: 0; min-width: 0; font-family: var(--f-folio); font-weight: 700; font-size: 1rem; overflow-wrap: anywhere; }
 .ficha dd.texto { font-family: var(--f-texto); }
-.ficha .btn { grid-area: btn; }
+.ficha .btn { grid-area: btn; min-height: 44px; }
 #c-clabe { font-size: .875rem; letter-spacing: 0; }
 .alerta { border-left: 0; background: var(--carton); border-radius: var(--r); padding: 10px 12px; font-size: .875rem; }
 .alerta b { font-family: var(--f-folio); }
@@ -390,14 +392,14 @@ p { margin: 0; }
 .cifra.ok b { color: var(--pacifico); }
 .por-conciliar { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .fol {
-  border: 1.5px solid var(--linea); border-left: 6px solid var(--apartado); border-radius: 4px; padding: 10px 12px;
+  border: 1.5px solid var(--linea); border-radius: 4px; padding: 10px 12px;
   display: grid; gap: 6px; background: var(--papel);
 }
-.fol.urge { border-left-color: var(--sello); }
-.fol.propio { border-color: var(--tinta); border-left-color: var(--sello); }
+.fol.propio { border-color: var(--tinta); }
 .fol-cab { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; }
-.fol-cab .vence { font-size: .8125rem; font-weight: 700; color: var(--tinta-2); }
-.fol.urge .vence { color: var(--sello); }
+.fol-cab .vence { font-size: .8125rem; font-weight: 700; line-height: 1.3; color: var(--tinta); border: 1.5px solid var(--apartado); border-radius: 999px; padding: 2px 10px; }
+.fol.urge .vence { background: var(--sello); border-color: var(--sello); color: var(--sello-tx); }
+.fol-cab .avisa { flex-basis: 100%; font-size: .8125rem; font-weight: 700; color: var(--pacifico); }
 .fol-nums { font-family: var(--f-display); font-weight: 800; font-size: 1.05rem; letter-spacing: .03em; overflow-wrap: anywhere; }
 .fol-datos { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 10px; font-size: .875rem; margin: 0; }
 .fol-datos dt { color: var(--tinta-2); }
@@ -409,7 +411,7 @@ p { margin: 0; }
 .confirmar { display: grid; gap: 8px; background: var(--carton); border-radius: 4px; padding: 10px; font-size: .875rem; }
 .confirmar div { display: flex; flex-wrap: wrap; gap: 8px; }
 .btn.peligro { background: var(--sello); color: var(--sello-tx); }
-.fol.cerrado { border-left-color: var(--linea); background: var(--carton); }
+.fol.cerrado { background: var(--carton); }
 .fol .etiqueta { font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tinta-2); }
 .buscar { display: grid; gap: 4px; font-size: .8125rem; font-weight: 700; }
 .buscar input {
@@ -422,7 +424,7 @@ p { margin: 0; }
   padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
   display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: .875rem;
 }
-.deshacer .btn { background: var(--sobre-tinta); color: var(--tinta); white-space: nowrap; }
+.deshacer .btn { background: var(--sobre-tinta); color: var(--tinta); white-space: nowrap; min-height: 44px; }
 .bitacora { list-style: none; margin: 0; padding: 0; font-family: var(--f-folio); font-size: .8125rem; display: grid; gap: 2px; max-height: 260px; overflow-y: auto; }
 .bitacora li { padding: 4px 0; border-bottom: 1px dotted var(--linea); overflow-wrap: anywhere; display: grid; grid-template-columns: 3.4rem 4.6rem minmax(0, 1fr); gap: 6px; }
 .bitacora .tag { font-weight: 700; }
@@ -1158,7 +1160,7 @@ p { margin: 0; }
         </dl>`;
     if (!PENDIENTE(f)) return `<li class="fol cerrado">${cab(`<span class="etiqueta">${ESTADO_TXT[f.estado] || f.estado}</span>`)}</li>`;
     const min = Math.max(0, Math.round((f.vence - hoy) / 60000));
-    const vence = min >= 60 ? `vence en ${Math.floor(min / 60)} h ${min % 60} min` : `vence en ${min} min`;
+    const vence = min >= 60 ? `vence en ${Math.floor(min / 60)} h${min % 60 ? ` ${min % 60} min` : ''}` : `vence en ${min} min`;
     const acciones = confirmando === f.folio
       ? `<div class="confirmar" role="group" aria-label="Confirmar liberar ${f.folio}">
            <p>¿Liberar ${f.folio}? Sus ${f.nums.length} ${f.nums.length === 1 ? 'número vuelve' : 'números vuelven'} a estar libres y ${f.nombre} pierde su apartado.</p>
@@ -1167,7 +1169,7 @@ p { margin: 0; }
       : `<div class="fol-acc"><button type="button" class="link" data-liberar="${f.folio}">Liberar números</button>
            <button type="button" class="btn ok" data-pagado="${f.folio}">Ya pagó ${monto}</button></div>`;
     return `<li class="fol ${min < 20 ? 'urge' : ''} ${f.propio ? 'propio' : ''}">
-        ${cab(`<span class="vence">${f.estado === 'transferido' ? 'dice que ya transfirió · ' : ''}${vence}</span>`)}
+        ${cab(`<span class="vence">${vence}</span>${f.estado === 'transferido' ? '<span class="avisa">Dice que ya transfirió: revisa el banco</span>' : ''}`)}
         ${acciones}
       </li>`;
   }

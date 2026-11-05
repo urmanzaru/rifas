@@ -93,7 +93,7 @@ Para pagar, el comprador sale a la app de su banco, y el navegador de Facebook m
 - Si el navegador bloquea el almacenamiento, todo sigue funcionando mientras la página esté abierta.
 
 ### 9. Gestión con el mismo papel
-La vista de conciliación es una lista de folios **ordenada por lo que vence primero**, con borde rojo cuando faltan menos de 20 min. Quien concilia la usa con el banco en una mano y WhatsApp en la otra, así que:
+La vista de conciliación es una lista de folios **ordenada por lo que vence primero**. El tiempo restante va en una etiqueta: contorno ámbar normalmente y rellena de rojo cuando faltan menos de 20 min. Quien concilia la usa con el banco en una mano y WhatsApp en la otra, así que:
 
 - **Búsqueda** por folio, nombre, WhatsApp o número de boleto. Al buscar también aparecen los folios ya cerrados (pagados, vencidos, liberados), sin botones, para resolver "dice que pagó pero ya no aparece".
 - **Cada tarjeta** muestra nombre, WhatsApp, números y **cuánto debe llegar** (`$75.00`), para compararlo con el banco.
@@ -116,7 +116,7 @@ La vista de conciliación es una lista de folios **ordenada por lo que vence pri
 | `--pacifico` | `#0B7A6F` | `#3CC4B2` | Pagado, confirmado, a tiempo. |
 | `--apartado` | `#C2860A` | `#E3AE3A` | Rayado de apartado. Nunca como relleno sólido. |
 
-**Regla de uso:** el rojo sello solo aparece en lo que es tuyo o en lo que tienes que hacer. Si todo es rojo, nada es urgente.
+**Regla de uso:** el rojo sello solo aparece en lo que es tuyo o en lo que tienes que hacer. Si todo es rojo, nada es urgente. Los avisos neutros ("El 487 ya está vendido") van en añil, no en rojo.
 
 ### Letra
 | Rol | Fuente | Por qué |

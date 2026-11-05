@@ -84,11 +84,22 @@ Para pagar, el comprador sale a la app de su banco, y el navegador de Facebook m
 | Estado | Qué dice el talón | Botón |
 | --- | --- | --- |
 | Apartado | "Paga antes de 1:52:10" | Ver cómo pagar |
-| Ya transferí | "Revisando tu pago" y el tiempo para mandar comprobante | Ver datos |
+| Aviso recibido | "Tus números siguen apartados mientras revisamos tu pago." Sin reloj. | Ver datos |
 | Pagado | "Ya son tuyos" con los números | Ver boleto |
 | Vencido / cancelado | "Los números se liberaron" | Quitar aviso |
 
 - El botón final de la hoja ya no dice "Listo" (sonaba a que todo había terminado). Ahora son "Ya transferí" y "Cerrar", con la nota de que el apartado queda guardado.
+
+### 8b. "Ya transferí" detiene el reloj
+**Regla propuesta (validar en la junta):** el apartado vence a las 2 horas *solo si el comprador no avisa*. Al tocar "Ya transferí", los números quedan apartados **sin límite**, hasta que Gestión marque "Ya pagó" o los libere.
+
+Por qué: con el reloj corriendo, alguien que pagó y avisó podía ver "Venció sin pago". Es el momento que convierte la duda de "¿será fraude?" en una acusación pública.
+
+- La hoja y el talón cambian a **"Aviso recibido"**, sin cuenta regresiva, y el sello del comprobante también.
+- **Fuera de horario** (antes de 9:00, después de 21:00 o en domingo), antes de apartar se avisa cuándo llegará la confirmación ("el lunes a partir de las 9:00") y que avisar detiene el reloj. El paso 3 de la hoja usa la misma hora.
+- En **Gestión**, quienes avisaron van arriba en su propio grupo, "Dicen que ya transfirieron", ordenados por quién avisó primero, con "avisó hace 52 min". El grupo de abajo, "Por pagar", sí vence solo.
+
+**Riesgo:** alguien puede tocar "Ya transferí" sin haber pagado y bloquear números hasta que Gestión los libere. Por eso ese grupo va primero: hay que revisarlo seguido, sobre todo al abrir cada mañana. En producción conviene limitar cuántos apartados avisados puede tener un mismo WhatsApp.
 - Al cerrar, el foco del teclado regresa al botón del talón.
 - Si el navegador bloquea el almacenamiento, todo sigue funcionando mientras la página esté abierta.
 
@@ -153,7 +164,7 @@ Todas con respaldo del sistema (`Roboto Condensed`, `Roboto`, `Courier New`) por
 ## Abierto a discusión
 
 1. A qué cuenta entra el dinero y a nombre de quién. El titular que se muestra en la hoja de pago depende de esa decisión.
-2. Si alguien paga fuera de horario, su apartado puede vencer antes de que lo confirmemos.
+2. Validar la regla de "Ya transferí" (sección 8b): los números quedan apartados sin límite hasta que Gestión revise. ¿Cada cuánto se revisa ese grupo, y quién lo hace?
 3. Fotos y pueblo de cada uno para "Quiénes rifamos".
 4. El nombre. Cambiarlo toca solo la franja, la marca y el prefijo del folio (`SM1`).
 5. Si la lista pública de vendidos muestra nombres o solo iniciales.

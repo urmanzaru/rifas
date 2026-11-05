@@ -399,7 +399,8 @@ p { margin: 0; }
 .fol-cab { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; }
 .fol-cab .vence { font-size: .8125rem; font-weight: 700; line-height: 1.3; color: var(--tinta); border: 1.5px solid var(--apartado); border-radius: 999px; padding: 2px 10px; }
 .fol.urge .vence { background: var(--sello); border-color: var(--sello); color: var(--sello-tx); }
-.fol-cab .avisa { flex-basis: 100%; font-size: .8125rem; font-weight: 700; color: var(--pacifico); }
+.fol-cab .vence.avisado { border-color: var(--pacifico); }
+.recibido { display: grid; gap: 6px; border: 1.5px solid var(--pacifico); border-radius: var(--r); padding: 12px; }
 .fol-nums { font-family: var(--f-display); font-weight: 800; font-size: 1.05rem; letter-spacing: .03em; overflow-wrap: anywhere; }
 .fol-datos { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 10px; font-size: .875rem; margin: 0; }
 .fol-datos dt { color: var(--tinta-2); }
@@ -412,6 +413,8 @@ p { margin: 0; }
 .confirmar div { display: flex; flex-wrap: wrap; gap: 8px; }
 .btn.peligro { background: var(--sello); color: var(--sello-tx); }
 .fol.cerrado { background: var(--carton); }
+#c-titulo:focus { outline: none; }
+.por-conciliar > li.etiqueta { font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tinta-2); padding-top: 8px; }
 .fol .etiqueta { font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tinta-2); }
 .buscar { display: grid; gap: 4px; font-size: .8125rem; font-weight: 700; }
 .buscar input {
@@ -739,6 +742,7 @@ p { margin: 0; }
             <input id="in-wa" name="wa" inputmode="numeric" autocomplete="tel-national" placeholder="958 123 4567">
           </label>
           <p class="error" id="form-error" role="alert" hidden></p>
+          <p class="alerta" id="fuera-horario" hidden></p>
           <button class="btn sello" type="submit" id="btn-confirmar">Apartar mis números</button>
           <button class="btn linea" type="button" id="btn-cancelar">Seguir eligiendo</button>
         </form>
@@ -753,12 +757,16 @@ p { margin: 0; }
           <p class="folio" id="c-folio"></p>
           <div class="resumen" id="c-nums"></div>
           <p class="num"><b id="c-total"></b></p>
-          <div class="sello-goma" aria-hidden="true">Apartado<small id="c-hora"></small></div>
+          <div class="sello-goma"><span id="c-sello">Apartado</span><small id="c-hora"></small></div>
         </div>
         <div id="c-tiempo">
           <p class="eyebrow">Tienes para pagar</p>
           <p class="reloj num" id="c-reloj" aria-live="off">2:00:00</p>
-          <p class="aviso">Si no pagas a tiempo, tus números se liberan solos para que alguien más los aparte.</p>
+          <p class="aviso">Transfiere y avísanos con «Ya transferí» antes de que llegue a cero. Si no, tus números se liberan solos. Después de avisar, ya no vencen.</p>
+        </div>
+        <div class="recibido" id="c-recibido" hidden>
+          <p><b>Recibimos tu aviso.</b> Tus números siguen apartados mientras revisamos tu pago. Ya no vencen.</p>
+          <p class="pista" id="c-recibido-txt"></p>
         </div>
         <ol class="pasos" id="c-pasos">
           <li><div>
@@ -780,7 +788,7 @@ p { margin: 0; }
             <span class="aviso">En el sitio real este botón abre WhatsApp con el mensaje ya escrito. Aquí solo lo copia.</span>
           </div></li>
           <li><div>
-            <b>Te confirmamos en menos de 1 hora</b>
+            <b id="c-confirma">Te confirmamos en menos de 1 hora</b>
             <span class="pista">De lunes a sábado, de 9:00 a 21:00. Tus números cambian a vendido en la cuadrícula, donde cualquiera los puede ver.</span>
           </div></li>
         </ol>
@@ -788,7 +796,7 @@ p { margin: 0; }
           <button type="button" class="btn" id="btn-transferi">Ya transferí</button>
           <button type="button" class="btn linea" id="btn-cerrar">Cerrar</button>
         </div>
-        <p class="aviso">Tu apartado queda guardado en este teléfono y en el link de tu mensaje. Lo ves abajo, en el talón, hasta que se confirme tu pago.</p>
+        <p class="aviso" id="c-cierre-aviso">«Ya transferí» detiene el reloj. Tu apartado queda guardado en este teléfono y en el link de tu mensaje; lo ves abajo, en el talón.</p>
       </div>
     </div>
   </div>
@@ -798,6 +806,20 @@ p { margin: 0; }
 (() => {
   'use strict';
   const CFG = { prefijo: 'SM1', precio: 25, equilibrio: 480, minutos: 120 };
+  // Horario de atención: lunes (1) a sábado (6), de 9:00 a 21:00
+  const HORARIO = { abre: 9, cierra: 21, dias: [1, 2, 3, 4, 5, 6] };
+  const enHorario = (d = new Date()) => HORARIO.dias.includes(d.getDay()) && d.getHours() >= HORARIO.abre && d.getHours() < HORARIO.cierra;
+  function cuandoConfirmamos(d = new Date()) {
+    if (enHorario(d)) return 'en menos de 1 hora';
+    const a = new Date(d); a.setMinutes(0, 0, 0);
+    if (!(HORARIO.dias.includes(a.getDay()) && a.getHours() < HORARIO.abre)) {
+      do { a.setDate(a.getDate() + 1); } while (!HORARIO.dias.includes(a.getDay()));
+    }
+    a.setHours(HORARIO.abre);
+    const dias = Math.round((new Date(a).setHours(0, 0, 0, 0) - new Date(d).setHours(0, 0, 0, 0)) / 86400000);
+    const cuando = dias === 0 ? 'hoy' : dias === 1 ? 'mañana' : 'el ' + a.toLocaleDateString('es-MX', { weekday: 'long' });
+    return `${cuando} a partir de las ${HORARIO.abre}:00`;
+  }
   const N = 1000;
   const $ = (id) => document.getElementById(id);
   const pad = (n) => String(n).padStart(3, '0');
@@ -817,7 +839,8 @@ p { margin: 0; }
     const nums = [];
     while (nums.length < k) { const n = Math.floor(rnd() * N); if (estado[n] === 'libre') { estado[n] = 'apartado'; nums.push(n); } }
     nums.sort((a, b) => a - b);
-    folios.push({ folio: CFG.prefijo + '-' + String(siguienteFolio++).padStart(4, '0'), nombre: nombres[idx], wa: '9580000' + String(101 + idx * 37).padStart(3, '0'), nums, vence: ahora + (6 + Math.floor(rnd() * 110)) * 60000, estado: 'apartado', propio: false });
+    const avisa = idx === 2 || idx === 7;
+    folios.push({ folio: CFG.prefijo + '-' + String(siguienteFolio++).padStart(4, '0'), nombre: nombres[idx], wa: '9580000' + String(101 + idx * 37).padStart(3, '0'), nums, vence: ahora + (6 + Math.floor(rnd() * 110)) * 60000, estado: avisa ? 'transferido' : 'apartado', avisado: avisa ? ahora - (idx === 2 ? 14 : 52) * 60000 : null, propio: false });
   });
   const bitacora = [
     { t: ahora - 9 * 60000, txt: 'SM1-0199 · $150', tipo: 'pago' },
@@ -834,7 +857,7 @@ p { margin: 0; }
   leerApartados().forEach(ap => {
     if (!ap || !ap.folio || !Array.isArray(ap.nums)) return;
     ap.propio = true;
-    if (PENDIENTE(ap) && ap.vence <= Date.now()) ap.estado = 'vencido';
+    if (ap.estado === 'apartado' && ap.vence <= Date.now()) ap.estado = 'vencido';
     if (PENDIENTE(ap)) ap.nums.forEach(n => { estado[n] = 'apartado'; });
     if (ap.estado === 'pagado') ap.nums.forEach(n => { estado[n] = 'vendido'; });
     const num = parseInt(ap.folio.split('-')[1], 10);
@@ -1029,7 +1052,7 @@ p { margin: 0; }
     const nums = ap.nums.map(pad).join(', ');
     const T = {
       apartado:    ['Apartado · paga antes de', `<span class="ma-reloj num">${reloj(resto)}</span>`, 'Ver cómo pagar'],
-      transferido: ['Revisando tu pago', `<span>Si no mandaste el comprobante, mándalo antes de <b class="num">${reloj(resto)}</b></span>`, 'Ver datos'],
+      transferido: ['Aviso recibido', `<span>Tus números siguen apartados mientras revisamos tu pago.</span>`, 'Ver datos'],
       pagado:      ['Pagado · ya son tuyos', `<span class="num">${nums}</span>`, 'Ver boleto'],
       vencido:     ['Venció sin pago', `<span>Los números ${nums} se liberaron.</span>`, 'Quitar aviso'],
       liberado:    ['Apartado cancelado', `<span>Los números ${nums} se liberaron.</span>`, 'Quitar aviso'],
@@ -1057,6 +1080,9 @@ p { margin: 0; }
     $('resumen-datos').innerHTML = [...tuyos].sort((a, b) => a - b).map(n => `<span class="n">${pad(n)}</span>`).join('') + `<b class="num" style="margin-left:4px">${pesos(tuyos.size * CFG.precio)}</b>`;
     if (!$('in-wa').value && valores.telefono.length === 10) $('in-wa').value = valores.telefono;
     $('paso-datos').hidden = false; $('paso-listo').hidden = true; $('form-error').hidden = true;
+    const fuera = !enHorario();
+    $('fuera-horario').hidden = !fuera;
+    if (fuera) $('fuera-horario').textContent = `Ahora no estamos atendiendo (lunes a sábado, de 9:00 a 21:00). Puedes apartar: tienes 2 horas para transferir y avisarnos con «Ya transferí», y después de avisar tus números ya no vencen. Te confirmamos ${cuandoConfirmamos()}.`;
     $('velo').hidden = false; $('in-nombre').focus();
   });
   const cerrar = () => {
@@ -1092,14 +1118,19 @@ p { margin: 0; }
     ultimo = ap;
     const total = pesos(ap.nums.length * CFG.precio);
     const pendiente = PENDIENTE(ap);
-    $('c-titulo').textContent = { apartado: 'Apartado. Ahora paga.', transferido: 'Revisando tu pago.', pagado: 'Pagado. Ya son tuyos.', vencido: 'Este apartado venció.', liberado: 'Este apartado se canceló.' }[ap.estado] || 'Tu apartado';
+    $('c-titulo').textContent = { apartado: 'Apartado. Ahora paga.', transferido: 'Aviso recibido.', pagado: 'Pagado. Ya son tuyos.', vencido: 'Este apartado venció.', liberado: 'Este apartado se canceló.' }[ap.estado] || 'Tu apartado';
     $('c-folio').textContent = ap.folio; $('c-folio2').textContent = ap.folio;
     $('c-monto').textContent = pesos(ap.nums.length * CFG.precio) + '.00';
     $('c-nums').innerHTML = ap.nums.map(n => `<span class="n">${pad(n)}</span>`).join('');
     $('c-total').textContent = `${ap.nums.length} ${ap.nums.length === 1 ? 'boleto' : 'boletos'} · ${total}`;
     $('c-hora').textContent = new Date(ap.creado || Date.now()).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
     $('c-mensaje').textContent = `Hola, aparté en Solo Mil, rifa #1.\nFolio: ${ap.folio}\nNúmeros: ${ap.nums.map(pad).join(', ')}\nTotal: ${total}\nA nombre de: ${ap.nombre}\nMi apartado: ${linkDe(ap.folio)}\nAquí va mi comprobante:`;
-    $('c-tiempo').hidden = !pendiente;
+    $('c-tiempo').hidden = ap.estado !== 'apartado';
+    $('c-recibido').hidden = ap.estado !== 'transferido';
+    $('c-recibido-txt').textContent = `Si todavía no mandaste el comprobante por WhatsApp, mándalo: así lo encontramos más rápido. Te confirmamos ${cuandoConfirmamos()}.`;
+    $('c-confirma').textContent = `Te confirmamos ${cuandoConfirmamos()}`;
+    $('c-sello').textContent = { apartado: 'Apartado', transferido: 'Aviso recibido', pagado: 'Pagado' }[ap.estado] || 'Apartado';
+    $('c-cierre-aviso').hidden = ap.estado !== 'apartado';
     $('c-pasos').hidden = !pendiente;
     $('btn-transferi').hidden = ap.estado !== 'apartado';
     $('paso-datos').hidden = true; $('paso-listo').hidden = false;
@@ -1110,7 +1141,7 @@ p { margin: 0; }
   }
   $('btn-transferi').addEventListener('click', () => {
     if (ultimo && ultimo.estado === 'apartado') {
-      ultimo.estado = 'transferido'; guardarApartados();
+      ultimo.estado = 'transferido'; ultimo.avisado = Date.now(); guardarApartados();
       bitacora.unshift({ t: Date.now(), txt: `${ultimo.folio} · el cliente dice que ya transfirió`, tipo: 'avisa' });
     }
     cerrar(); render();
@@ -1159,8 +1190,10 @@ p { margin: 0; }
           <dt>Debe llegar</dt><dd class="folio">${monto}.00</dd>
         </dl>`;
     if (!PENDIENTE(f)) return `<li class="fol cerrado">${cab(`<span class="etiqueta">${ESTADO_TXT[f.estado] || f.estado}</span>`)}</li>`;
+    const avisado = f.estado === 'transferido';
+    const dur = (m) => m >= 60 ? `${Math.floor(m / 60)} h${m % 60 ? ` ${m % 60} min` : ''}` : `${m} min`;
     const min = Math.max(0, Math.round((f.vence - hoy) / 60000));
-    const vence = min >= 60 ? `vence en ${Math.floor(min / 60)} h${min % 60 ? ` ${min % 60} min` : ''}` : `vence en ${min} min`;
+    const vence = avisado ? `avisó hace ${dur(Math.max(0, Math.round((hoy - (f.avisado || hoy)) / 60000)))}` : `vence en ${dur(min)}`;
     const acciones = confirmando === f.folio
       ? `<div class="confirmar" role="group" aria-label="Confirmar liberar ${f.folio}">
            <p>¿Liberar ${f.folio}? Sus ${f.nums.length} ${f.nums.length === 1 ? 'número vuelve' : 'números vuelven'} a estar libres y ${f.nombre} pierde su apartado.</p>
@@ -1168,8 +1201,8 @@ p { margin: 0; }
          </div>`
       : `<div class="fol-acc"><button type="button" class="link" data-liberar="${f.folio}">Liberar números</button>
            <button type="button" class="btn ok" data-pagado="${f.folio}">Ya pagó ${monto}</button></div>`;
-    return `<li class="fol ${min < 20 ? 'urge' : ''} ${f.propio ? 'propio' : ''}">
-        ${cab(`<span class="vence">${vence}</span>${f.estado === 'transferido' ? '<span class="avisa">Dice que ya transfirió: revisa el banco</span>' : ''}`)}
+    return `<li class="fol ${!avisado && min < 20 ? 'urge' : ''} ${f.propio ? 'propio' : ''}">
+        ${cab(`<span class="vence ${avisado ? 'avisado' : ''}">${vence}</span>`)}
         ${acciones}
       </li>`;
   }
@@ -1183,9 +1216,12 @@ p { margin: 0; }
       `<div class="cifra"><b>${a}</b><span>apartados · ${pesos(a * CFG.precio)} por cobrar</span></div>` +
       `<div class="cifra"><b>${N - v - a}</b><span>libres</span></div>` +
       `<div class="cifra ${falta <= 0 ? 'ok' : ''}"><b>${falta <= 0 ? '+' + (-falta) : falta}</b><span>${falta <= 0 ? 'sobre el punto de equilibrio (480)' : 'para el punto de equilibrio (480)'}</span></div>`;
-    const pend = folios.filter(f => PENDIENTE(f) && coincideBusqueda(f)).sort((x, y) => x.vence - y.vence);
+    const avisaron = folios.filter(f => f.estado === 'transferido' && coincideBusqueda(f)).sort((x, y) => (x.avisado || 0) - (y.avisado || 0));
+    const porPagar = folios.filter(f => f.estado === 'apartado' && coincideBusqueda(f)).sort((x, y) => x.vence - y.vence);
     const cerrados = busqueda ? folios.filter(f => !PENDIENTE(f) && coincideBusqueda(f)) : [];
-    let html = pend.map(f => tarjeta(f, hoy)).join('');
+    let html = '';
+    if (avisaron.length) html += `<li class="etiqueta">Dicen que ya transfirieron (${avisaron.length}) · no vencen, revísalos primero</li>` + avisaron.map(f => tarjeta(f, hoy)).join('');
+    if (porPagar.length) html += `<li class="etiqueta">Por pagar (${porPagar.length}) · se liberan solos al vencer</li>` + porPagar.map(f => tarjeta(f, hoy)).join('');
     if (cerrados.length) html += `<li class="etiqueta">Ya cerrados</li>` + cerrados.map(f => tarjeta(f, hoy)).join('');
     if (!html) html = busqueda
       ? `<li class="pista">Ningún folio coincide con “${busqueda.replace(/[<>&]/g, '')}”. Revisa el folio en el comprobante o busca por nombre.</li>`
@@ -1255,7 +1291,7 @@ p { margin: 0; }
     const hoy = Date.now();
     let cambio = false;
     folios.forEach(f => {
-      if (PENDIENTE(f) && f.vence <= hoy) {
+      if (f.estado === 'apartado' && f.vence <= hoy) {
         f.estado = 'vencido'; f.nums.forEach(n => { estado[n] = 'libre'; }); cambio = true;
         if (f.propio) guardarApartados();
         bitacora.unshift({ t: hoy, txt: `${f.folio} · ${f.nums.length} ${f.nums.length === 1 ? 'número libre' : 'números libres'}`, tipo: 'vence' });

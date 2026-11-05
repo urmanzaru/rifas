@@ -355,9 +355,32 @@ p { margin: 0; }
 .dato code { font-family: var(--f-folio); font-weight: 700; font-size: 1rem; background: var(--carton); padding: 4px 8px; border-radius: 3px; overflow-wrap: anywhere; }
 .burbuja {
   background: #DCF4D9; color: #10240F; border-radius: 8px 8px 8px 2px; padding: 10px 12px; font-size: .875rem; white-space: pre-line; max-width: 300px;
-  box-shadow: 0 1px 0 #0000001A;
+  box-shadow: 0 1px 0 #0000001A; overflow-wrap: anywhere;
 }
 .aviso { font-size: .8125rem; color: var(--tinta-2); }
+.ficha { margin: 2px 0 0; display: grid; border: 1.5px solid var(--tinta); border-radius: var(--r); background: var(--papel); }
+.ficha > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "dt btn" "dd btn"; gap: 2px 10px; align-items: center; padding: 8px 10px; }
+.ficha > div + div { border-top: 1px dashed var(--linea); }
+.ficha dt { grid-area: dt; font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tinta-2); }
+.ficha dd { grid-area: dd; margin: 0; min-width: 0; font-family: var(--f-folio); font-weight: 700; font-size: 1rem; overflow-wrap: anywhere; }
+.ficha dd.texto { font-family: var(--f-texto); }
+.ficha .btn { grid-area: btn; }
+#c-clabe { font-size: .875rem; letter-spacing: 0; }
+.alerta { border-left: 0; background: var(--carton); border-radius: var(--r); padding: 10px 12px; font-size: .875rem; }
+.alerta b { font-family: var(--f-folio); }
+
+.equipo { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 10px; }
+.equipo li { display: grid; gap: 6px; min-width: 0; }
+.foto {
+  aspect-ratio: 1 / 1; max-width: 100%; border-radius: 4px; border: 1.5px solid var(--tinta); background: var(--carton);
+  display: grid; place-items: center; position: relative; overflow: hidden;
+  font-family: var(--f-display); font-weight: 900; font-size: 2.6rem; color: var(--tinta-2);
+}
+.foto small { position: absolute; bottom: 10px; left: 0; right: 0; text-align: center; font-family: var(--f-texto); font-size: .6875rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.equipo b { font-family: var(--f-display); font-weight: 800; font-size: 1.25rem; line-height: 1.05; }
+.equipo .pista { font-size: .8125rem; }
+.contacto { display: grid; gap: 6px; background: var(--carton); border-radius: var(--r); padding: 12px; }
+.contacto .dato code { background: var(--papel); }
 
 /* ---------- Vista de gestión ---------- */
 .tablero { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 20px; }
@@ -477,6 +500,22 @@ p { margin: 0; }
           </figure>
         </section>
 
+        <section class="seccion" aria-labelledby="h-quienes">
+          <h2 id="h-quienes">Quiénes rifamos</h2>
+          <p>Somos cuatro, de aquí de la costa. Nosotros compramos el premio, lo entregamos y grabamos la entrega.</p>
+          <ul class="equipo">
+            <li><span class="foto" aria-hidden="true">UM<small>Foto real</small></span><b>Uriel Manzano</b><span class="pista">Pueblo por confirmar</span></li>
+            <li><span class="foto" aria-hidden="true">JM<small>Foto real</small></span><b>José María Máximo</b><span class="pista">Pueblo por confirmar</span></li>
+            <li><span class="foto" aria-hidden="true">E<small>Foto real</small></span><b>Ederick</b><span class="pista">Pueblo por confirmar</span></li>
+            <li><span class="foto" aria-hidden="true">F<small>Foto real</small></span><b>Famero</b><span class="pista">Pueblo por confirmar</span></li>
+          </ul>
+          <div class="contacto">
+            <p><b>¿Dudas antes de comprar?</b> Escríbenos.</p>
+            <div class="dato"><code id="wa-equipo">958 000 0000</code><button type="button" class="btn linea chico" data-copiar="wa-equipo" aria-label="Copiar número de WhatsApp">Copiar número</button></div>
+            <p class="pista">WhatsApp, lunes a sábado de 9:00 a 21:00.</p>
+          </div>
+        </section>
+
         <section class="seccion" aria-labelledby="h-prob">
           <h2 id="h-prob">Tus probabilidades, claras</h2>
           <div class="prob">
@@ -556,7 +595,7 @@ p { margin: 0; }
         </section>
 
         <footer class="pie">
-          <p><b>Atención por WhatsApp:</b> lunes a sábado, 9:00 a 21:00.</p>
+          <p><b>Atención por WhatsApp:</b> <span class="folio">958 000 0000</span>, lunes a sábado de 9:00 a 21:00.</p>
           <p>Bases completas de la rifa · Aviso de privacidad</p>
         </footer>
 
@@ -692,19 +731,26 @@ p { margin: 0; }
         </div>
         <ol class="pasos" id="c-pasos">
           <li><div>
-            <b>Transfiere por SPEI</b>
-            <div class="dato"><code id="c-clabe">0123 4567 8901 2345 67</code><button type="button" class="btn linea chico" data-copiar="c-clabe">Copiar CLABE</button></div>
-            <span class="pista">En el concepto escribe tu folio: <b class="folio" id="c-folio2"></b></span>
+            <b>Transfiere por SPEI desde la app de tu banco</b>
+            <dl class="ficha">
+              <div><dt>Para</dt><dd class="texto" id="c-titular">TITULAR DE EJEMPLO</dd></div>
+              <div><dt>Banco</dt><dd class="texto">Banco de ejemplo</dd></div>
+              <div><dt>CLABE</dt><dd id="c-clabe">0123 4567 8901 2345 67</dd><button type="button" class="btn linea chico" data-copiar="c-clabe" aria-label="Copiar CLABE">Copiar</button></div>
+              <div><dt>Monto</dt><dd id="c-monto" class="num"></dd><button type="button" class="btn linea chico" data-copiar="c-monto" aria-label="Copiar monto">Copiar</button></div>
+              <div><dt>Concepto</dt><dd id="c-folio2"></dd><button type="button" class="btn linea chico" data-copiar="c-folio2" aria-label="Copiar concepto">Copiar</button></div>
+            </dl>
+            <p class="alerta">Antes de enviar, tu banco te enseña a nombre de quién está la cuenta. Si no dice <b>TITULAR DE EJEMPLO</b>, no transfieras y escríbenos.</p>
           </div></li>
           <li><div>
             <b>Mándanos tu comprobante por WhatsApp</b>
             <div class="burbuja" id="c-mensaje"></div>
             <button type="button" class="btn sello" id="btn-wa">Abrir WhatsApp con mi folio</button>
+            <span class="pista">Nuestro número: <b class="folio">958 000 0000</b></span>
             <span class="aviso">En el sitio real este botón abre WhatsApp con el mensaje ya escrito. Aquí solo lo copia.</span>
           </div></li>
           <li><div>
-            <b>Te confirmamos y tu número cambia a vendido</b>
-            <span class="pista">Lo puedes ver en la cuadrícula. Cualquiera lo puede ver.</span>
+            <b>Te confirmamos en menos de 1 hora</b>
+            <span class="pista">De lunes a sábado, de 9:00 a 21:00. Tus números cambian a vendido en la cuadrícula, donde cualquiera los puede ver.</span>
           </div></li>
         </ol>
         <div class="cierre">
@@ -1017,6 +1063,7 @@ p { margin: 0; }
     const pendiente = PENDIENTE(ap);
     $('c-titulo').textContent = { apartado: 'Apartado. Ahora paga.', transferido: 'Revisando tu pago.', pagado: 'Pagado. Ya son tuyos.', vencido: 'Este apartado venció.', liberado: 'Este apartado se canceló.' }[ap.estado] || 'Tu apartado';
     $('c-folio').textContent = ap.folio; $('c-folio2').textContent = ap.folio;
+    $('c-monto').textContent = pesos(ap.nums.length * CFG.precio) + '.00';
     $('c-nums').innerHTML = ap.nums.map(n => `<span class="n">${pad(n)}</span>`).join('');
     $('c-total').textContent = `${ap.nums.length} ${ap.nums.length === 1 ? 'boleto' : 'boletos'} · ${total}`;
     $('c-hora').textContent = new Date(ap.creado || Date.now()).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
@@ -1038,12 +1085,23 @@ p { margin: 0; }
     cerrar(); render();
   });
 
-  async function copiar(texto, btn, ok) {
-    try { await navigator.clipboard.writeText(texto); const t = btn.textContent; btn.textContent = ok; setTimeout(() => { btn.textContent = t; }, 1600); }
-    catch { aviso('No se pudo copiar. Mantén presionado el texto para copiarlo.'); }
+  // Si el navegador no deja copiar, selecciona el texto para copiarlo a mano
+  async function copiar(texto, btn, ok, el) {
+    const t = btn.textContent;
+    try { await navigator.clipboard.writeText(texto); btn.textContent = ok; }
+    catch {
+      if (el) { const r = document.createRange(); r.selectNodeContents(el); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
+      btn.textContent = el ? 'Ya está seleccionado' : 'No se pudo copiar';
+    }
+    setTimeout(() => { btn.textContent = t; }, 2200);
   }
-  document.querySelectorAll('[data-copiar]').forEach(b => b.addEventListener('click', () => copiar($(b.dataset.copiar).textContent.replace(/\s/g, ''), b, 'Copiada')));
-  $('btn-wa').addEventListener('click', (e) => copiar($('c-mensaje').textContent, e.currentTarget, 'Mensaje copiado'));
+  // Copia el valor tal como lo pide la app del banco: sin espacios, y el monto sin "$" ni comas
+  document.querySelectorAll('[data-copiar]').forEach(b => b.addEventListener('click', () => {
+    let v = $(b.dataset.copiar).textContent.replace(/\s/g, '');
+    if (b.dataset.copiar === 'c-monto') v = v.replace(/[$,]/g, '');
+    copiar(v, b, 'Copiado', $(b.dataset.copiar));
+  }));
+  $('btn-wa').addEventListener('click', (e) => copiar($('c-mensaje').textContent, e.currentTarget, 'Mensaje copiado', $('c-mensaje')));
 
   // ---------- Gestión ----------
   function renderGestion() {

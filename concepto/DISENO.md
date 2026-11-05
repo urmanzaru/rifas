@@ -63,6 +63,18 @@ Fijo al pie. Muestra tus números (tocables para quitarlos), tu probabilidad ("1
 ### 7. Apartado → pago en tres pasos
 Después de apartar: folio con sello y hora, cuenta regresiva de 2 h, y tres pasos numerados (transferir por SPEI → mandar comprobante por WhatsApp → te confirmamos). El mensaje de WhatsApp ya va escrito con folio, números, total, nombre y el link al apartado. El cliente no teclea nada.
 
+### 7b. El pago dice a quién, cuánto y con qué concepto
+El momento de más miedo es transferirle a desconocidos. La hoja de pago lo trata así:
+
+- **Ficha de transferencia** con cinco datos: para (titular), banco, CLABE, monto y concepto. Los tres que se teclean en el banco (CLABE, monto, concepto) tienen botón de copiar, y se copian como los pide la app: CLABE sin espacios y monto sin "$" ni comas (`50.00`).
+- **Aviso de verificación**: "Antes de enviar, tu banco te enseña a nombre de quién está la cuenta. Si no dice «TITULAR», no transfieras y escríbenos." Protege al comprador incluso de alguien que se haga pasar por nosotros.
+- **El WhatsApp siempre visible** como número, no solo como botón.
+- **Tiempo de confirmación**: "Te confirmamos en menos de 1 hora", con el horario.
+- Si el navegador no deja copiar, el texto queda seleccionado para copiarlo a mano.
+
+### 7c. Quiénes rifamos
+Toda la confianza visual era papel; faltaba gente. Una sección con foto real, nombre y pueblo de los cuatro, justo después de "El premio ya lo tenemos", más el WhatsApp para dudas antes de comprar. En el prototipo las fotos y los pueblos están por confirmar.
+
 ### 8. El apartado no se pierde
 Para pagar, el comprador sale a la app de su banco, y el navegador de Facebook muchas veces recarga la página al volver. Por eso:
 
@@ -134,7 +146,10 @@ Todas con respaldo del sistema (`Roboto Condensed`, `Roboto`, `Courier New`) por
 
 ## Abierto a discusión
 
-1. El nombre. Cambiarlo toca solo la franja, la marca y el prefijo del folio (`SM1`).
-2. Si la lista pública de vendidos muestra nombres o solo iniciales.
-3. El regalo de 10+ boletos.
-4. Si "Seguiditos" permite más de 50.
+1. A qué cuenta entra el dinero y a nombre de quién. El titular que se muestra en la hoja de pago depende de esa decisión.
+2. Si alguien paga fuera de horario, su apartado puede vencer antes de que lo confirmemos.
+3. Fotos y pueblo de cada uno para "Quiénes rifamos".
+4. El nombre. Cambiarlo toca solo la franja, la marca y el prefijo del folio (`SM1`).
+5. Si la lista pública de vendidos muestra nombres o solo iniciales.
+6. El regalo de 10+ boletos.
+7. Si "Seguiditos" permite más de 50.

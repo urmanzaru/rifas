@@ -237,8 +237,12 @@ p { margin: 0; }
 .b.vendido { background: var(--tinta); color: var(--tinta-2); border-color: var(--tinta); cursor: not-allowed; }
 .b.apartado { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--apartado) 55%, transparent) 0 3px, transparent 3px 7px), var(--papel); color: var(--tinta-2); border-color: var(--apartado); cursor: not-allowed; }
 .b.tuyo { background: var(--sello); color: var(--sello-tx); border-color: var(--sello); }
+/* Apartado por ti: el rayado de "apartado", pero con el contorno rojo de lo tuyo */
+.b.mio { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--sello) 40%, transparent) 0 3px, transparent 3px 7px), var(--papel); color: var(--tinta); border: 2px solid var(--sello); }
+.b.mio-pagado { background: var(--tinta); color: var(--sobre-tinta); border: 2px solid var(--sello); }
 .b.libre:active { transform: scale(.94); }
 .filtrando .b.fuera { opacity: .16; }
+.filtrando .b.fuera.tuyo, .filtrando .b.fuera.mio, .filtrando .b.fuera.mio-pagado { opacity: 1; }
 .filtrando .b.dentro.libre { border: 2px solid var(--tinta); }
 
 .leyenda { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .8125rem; color: var(--tinta-2); }
@@ -247,6 +251,7 @@ p { margin: 0; }
 .leyenda i.v { background: var(--tinta); border-color: var(--tinta); }
 .leyenda i.a { background: repeating-linear-gradient(135deg, var(--apartado) 0 2px, transparent 2px 5px); border-color: var(--apartado); }
 .leyenda i.t { background: var(--sello); border-color: var(--sello); }
+.leyenda i.m { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--sello) 40%, transparent) 0 2px, transparent 2px 5px), var(--papel); border: 2px solid var(--sello); }
 
 /* Escalera */
 .escalera { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-left: 2px solid var(--linea); }
@@ -312,6 +317,8 @@ p { margin: 0; }
 .ma-estado { font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; opacity: .8; }
 .ma-linea { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; }
 .ma-folio { font-family: var(--f-folio); font-weight: 700; }
+#ma-detalle { display: contents; }
+.ma-nums { flex-basis: 100%; }
 .ma-reloj { font-family: var(--f-display); font-weight: 900; font-size: 1.4rem; line-height: 1; font-variant-numeric: tabular-nums; }
 .mi-apartado .btn { background: var(--sobre-tinta); color: var(--tinta); white-space: nowrap; min-height: 44px; }
 .mi-apartado[data-estado="vencido"] .ma-reloj { text-decoration: line-through; opacity: .7; }
@@ -585,7 +592,8 @@ p { margin: 0; }
             <span><i></i>Libre</span>
             <span><i class="a"></i>Apartado (2 h)</span>
             <span><i class="v"></i>Vendido</span>
-            <span><i class="t"></i>Tuyo</span>
+            <span><i class="t"></i>Elegido por ti</span>
+            <span><i class="m"></i>Apartado por ti</span>
           </div>
         </section>
 
@@ -865,6 +873,12 @@ p { margin: 0; }
     folios.push(ap);
   });
   const misApartados = () => folios.filter(f => f.propio && f.estado !== 'descartado');
+  // Mis números vivos en esta rifa: apartados, avisados o pagados
+  function misNumeros() {
+    const m = new Map();
+    folios.forEach(f => { if (f.propio && (PENDIENTE(f) || f.estado === 'pagado')) f.nums.forEach(n => m.set(n, f)); });
+    return m;
+  }
   const linkDe = (folio) => location.href.split('#')[0] + '#' + folio;
   const reloj = (ms) => { const s = Math.max(0, Math.round(ms / 1000)); return `${Math.floor(s / 3600)}:${String(Math.floor(s % 3600 / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`; };
 
@@ -910,6 +924,11 @@ p { margin: 0; }
 
   function tocar(n) {
     if (tuyos.has(n)) { tuyos.delete(n); render(); return; }
+    const mio = misNumeros().get(n);
+    if (mio) {
+      const que = { apartado: `Paga antes de ${reloj(mio.vence - Date.now())}.`, transferido: 'Estamos revisando tu pago.', pagado: 'Ya está pagado.' }[mio.estado];
+      return aviso(`El ${pad(n)} es tuyo (${mio.folio}). ${que}`);
+    }
     if (estado[n] === 'vendido') return aviso(`El ${pad(n)} ya está vendido.`);
     if (estado[n] === 'apartado') return aviso(`El ${pad(n)} está apartado. Si no lo pagan, se libera.`);
     tuyos.add(n); render();
@@ -1003,13 +1022,16 @@ p { margin: 0; }
 
     // cuadrícula
     elGrid.classList.toggle('filtrando', !!filtrando);
+    const mios = misNumeros();
     celdas.forEach((b, i) => {
       const n = centena * 100 + i, s = pad(n);
-      const st = tuyos.has(n) ? 'tuyo' : estado[n];
+      const mio = mios.get(n);
+      const st = tuyos.has(n) ? 'tuyo' : mio ? (mio.estado === 'pagado' ? 'mio-pagado' : 'mio') : estado[n];
       const m = filtrando ? coincide(n) : null;
       b.className = 'b ' + st + (filtrando ? (m ? ' dentro' : ' fuera') : '');
       b.textContent = s;
-      b.setAttribute('aria-label', `Boleto ${s}, ${st === 'tuyo' ? 'elegido por ti' : st}`);
+      const desc = { tuyo: 'elegido por ti', mio: `apartado por ti, folio ${mio && mio.folio}`, 'mio-pagado': `tuyo, pagado, folio ${mio && mio.folio}` }[st] || st;
+      b.setAttribute('aria-label', `Boleto ${s}, ${desc}${m ? ', cumple la regla' : ''}`);
       b.setAttribute('aria-pressed', String(st === 'tuyo'));
       b.setAttribute('aria-disabled', String(st === 'vendido' || st === 'apartado'));
     });
@@ -1021,19 +1043,23 @@ p { margin: 0; }
 
   function renderTalon() {
     const k = tuyos.size, lista = [...tuyos].sort((x, y) => x - y);
+    const ya = misNumeros().size, total = k + ya;   // lo que ya apartaste cuenta para la escalera
     $('mis').innerHTML = lista.map(n => `<button type="button" data-quitar="${n}" aria-label="Quitar ${pad(n)}">${pad(n)}<span aria-hidden="true">×</span></button>`).join('');
     let msg;
     if (!k) msg = 'Toca un número libre para empezar.';
-    else if (k < 5) msg = `Te ${5 - k === 1 ? 'falta <b>1</b>' : `faltan <b>${5 - k}</b>`} para el sorteo de $1,000.`;
-    else if (k < 10) msg = `Ya entras al sorteo de $1,000. Con <b>${10 - k}</b> más llevas regalo.`;
-    else if (k < 20) msg = `Llevas regalo. Con <b>${20 - k}</b> más te lo llevamos a tu casa.`;
+    else if (total < 5) msg = `Te ${5 - total === 1 ? 'falta <b>1</b>' : `faltan <b>${5 - total}</b>`} para el sorteo de $1,000.`;
+    else if (total < 10) msg = `Ya entras al sorteo de $1,000. Con <b>${10 - total}</b> más llevas regalo.`;
+    else if (total < 20) msg = `Llevas regalo. Con <b>${20 - total}</b> más te lo llevamos a tu casa.`;
     else msg = 'Llevas regalo y entrega a domicilio.';
-    if (k) msg = `<span class="num">${k} ${k === 1 ? 'boleto' : 'boletos'} · 1 en ${Math.round(N / k).toLocaleString('es-MX')}</span><br>` + msg;
+    if (k) {
+      const cuenta = ya ? `${k} ${k === 1 ? 'nuevo' : 'nuevos'} + ${ya} ${ya === 1 ? 'apartado' : 'apartados'} = ${total}` : `${k} ${k === 1 ? 'boleto' : 'boletos'}`;
+      msg = `<span class="num">${cuenta} · 1 en ${Math.round(N / total).toLocaleString('es-MX')}</span><br>` + msg;
+    }
     $('talon-msg').innerHTML = msg;
     const btn = $('btn-apartar');
     btn.disabled = !k;
     btn.textContent = k ? `Apartar · ${pesos(k * CFG.precio)}` : 'Apartar';
-    document.querySelectorAll('#escalera li').forEach(li => li.classList.toggle('logrado', k >= +li.dataset.min));
+    document.querySelectorAll('#escalera li').forEach(li => li.classList.toggle('logrado', total >= +li.dataset.min));
     renderMiApartado();
     $('talon-fila').hidden = !k && !$('mi-apartado').hidden;
     $('mi-apartado').classList.toggle('solo', $('talon-fila').hidden);
@@ -1051,8 +1077,8 @@ p { margin: 0; }
     const resto = ap.vence - Date.now();
     const nums = ap.nums.map(pad).join(', ');
     const T = {
-      apartado:    ['Apartado · paga antes de', `<span class="ma-reloj num">${reloj(resto)}</span>`, 'Ver cómo pagar'],
-      transferido: ['Aviso recibido', `<span>Tus números siguen apartados mientras revisamos tu pago.</span>`, 'Ver datos'],
+      apartado:    ['Apartado · paga antes de', `<span class="ma-reloj num">${reloj(resto)}</span><span class="ma-nums num">Tus números: ${nums}</span>`, 'Ver cómo pagar'],
+      transferido: ['Aviso recibido', `<span><span class="num">${nums}</span> siguen apartados mientras revisamos tu pago.</span>`, 'Ver datos'],
       pagado:      ['Pagado · ya son tuyos', `<span class="num">${nums}</span>`, 'Ver boleto'],
       vencido:     ['Venció sin pago', `<span>Los números ${nums} se liberaron.</span>`, 'Quitar aviso'],
       liberado:    ['Apartado cancelado', `<span>Los números ${nums} se liberaron.</span>`, 'Quitar aviso'],

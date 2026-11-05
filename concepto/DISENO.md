@@ -39,7 +39,9 @@ Mil botones en un celular de gama baja son imposibles de navegar. Se dividen en 
 | Libre | Papel con borde fino. Se puede tocar. |
 | Apartado | **Rayado** ámbar. No se puede tocar. Se libera solo a las 2 h. |
 | Vendido | **Relleno** añil. No se puede tocar. |
-| Tuyo | **Rojo sello**, texto blanco. |
+| Elegido por ti | **Rojo sello** relleno, texto blanco. Está en tu talón, todavía no apartado. |
+| Apartado por ti | **Rayado rojo con contorno rojo sello.** Es el rayado de "apartado" con la marca de lo tuyo. Al tocarlo: "El 437 es tuyo (SM1-0214). Paga antes de 1:52:10." |
+| Tuyo, pagado | **Relleno** añil con contorno rojo sello. Al tocarlo: "Ya está pagado." |
 
 Así se distingue con el sol de frente, en pantallas baratas y para personas que no distinguen colores.
 
@@ -52,6 +54,8 @@ Seis reglas, en este orden: **Mi teléfono**, Termina en, Trae un, Uno exacto, C
 - Si quedan 20 o menos libres que cumplen, se ofrece "Agregar los N libres".
 
 ### 4. El talón: la única llamada a la acción
+Mientras tienes un apartado, el talón muestra tu folio, el tiempo y **tus números**. Lo que ya apartaste **cuenta para la escalera de premios**: si tienes 2 apartados y eliges 3 más, el talón dice "3 nuevos + 2 apartados = 5" y ya entras al sorteo de $1,000. *Suposición a validar:* la escalera es por persona en la rifa, no por compra.
+
 Fijo al pie. Muestra tus números (tocables para quitarlos), tu probabilidad ("1 en 500") y cuánto te falta para el siguiente escalón de la escalera de recompensas. El botón dice el monto exacto: "Apartar · $75".
 
 ### 5. Fecha dura arriba, siempre

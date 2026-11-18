@@ -6,6 +6,7 @@ Plataforma de rifas de 1,000 boletos con número elegido, para la costa de Oaxac
 
 - [`concepto/index.html`](concepto/index.html): prototipo navegable del concepto visual (vista de cliente y vista de gestión). Ábrelo directo en el navegador; no necesita instalación.
 - [`concepto/DISENO.md`](concepto/DISENO.md): la idea, las decisiones de diseño, los tokens de color y letra, y las restricciones técnicas.
+- [`PLAN.md`](PLAN.md): qué falta por revisar, decidir e implementar, y cómo retomar en otra sesión.
 
 ## Skills de Claude Code
 

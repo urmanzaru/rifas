@@ -27,6 +27,8 @@
   --apartado-tx: #85590A;   /* ámbar de apartado para texto (≥5:1) */
   --burbuja: #DCF4D9;   /* burbuja de WhatsApp */
   --burbuja-tx: #10240F;
+  --vendido: #14223F;       /* relleno de vendido: en claro es la tinta */
+  --vendido-tx: #8FA3CF;    /* número sobre vendido: añil claro, no gris (6.2:1) */
 
   --f-display: "Sofia Sans Extra Condensed", "Roboto Condensed", "Arial Narrow", sans-serif;
   --f-texto:   "Atkinson Hyperlegible", Roboto, "Segoe UI", system-ui, sans-serif;
@@ -41,6 +43,7 @@
     --tinta: #E9EDF3; --tinta-2: #9DA9BC; --linea: #E9EDF32B;
     --sello: #FF6847; --sello-tx: #1A0905;
     --pacifico: #3CC4B2; --apartado: #E3AE3A; --sobre-tinta: #101828; --burbuja: #1F4A3A; --burbuja-tx: #E6F4EA; --sello-texto: #FF6847; --apartado-tx: #E3AE3A;
+    --vendido: #2A3754; --vendido-tx: #9BAEDB;
     color-scheme: dark;
   }
 }
@@ -49,6 +52,7 @@
   --tinta: #E9EDF3; --tinta-2: #9DA9BC; --linea: #E9EDF32B;
   --sello: #FF6847; --sello-tx: #1A0905;
   --pacifico: #3CC4B2; --apartado: #E3AE3A; --sobre-tinta: #101828; --burbuja: #1F4A3A; --burbuja-tx: #E6F4EA; --sello-texto: #FF6847; --apartado-tx: #E3AE3A;
+  --vendido: #2A3754; --vendido-tx: #9BAEDB;
   color-scheme: dark;
 }
 
@@ -64,6 +68,7 @@ button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
 :focus-visible { outline: 3px solid var(--sello); outline-offset: 2px; }
 .num { font-variant-numeric: tabular-nums; }
+.vh { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .folio { font-family: var(--f-folio); font-weight: 700; letter-spacing: .02em; }
 .eyebrow { font-size: .75rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-2); }
 h1, h2, h3 { font-family: var(--f-display); font-weight: 900; line-height: .95; margin: 0; text-wrap: balance; letter-spacing: .005em; }
@@ -112,7 +117,7 @@ p { margin: 0; text-wrap: pretty; }
 .marca span:last-child::before { left: -4px; }
 .marca span:last-child::after { right: -4px; }
 .vista { display: inline-flex; border: 1.5px solid var(--tinta); border-radius: 999px; padding: 2px; }
-.vista button { border: 0; background: none; padding: 5px 12px; border-radius: 999px; font-size: .8125rem; font-weight: 700; }
+.vista button { border: 0; background: none; padding: 0 14px; min-height: 44px; border-radius: 999px; font-size: .8125rem; font-weight: 700; }
 .vista button[aria-pressed="true"] { background: var(--tinta); color: var(--sobre-tinta); }
 
 .seccion { padding-block: 28px; border-bottom: 1px dashed var(--linea); display: grid; gap: 14px; }
@@ -127,7 +132,7 @@ p { margin: 0; text-wrap: pretty; }
 .boleto h1 { font-size: clamp(2.6rem, 11vw, 3.2rem); text-transform: uppercase; }
 .boleto .valor { font-family: var(--f-display); font-weight: 800; font-size: 1.25rem; color: var(--tinta-2); }
 .precio-fila { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-.precio { font-family: var(--f-display); font-weight: 900; font-size: 3.4rem; line-height: .9; color: var(--sello); }
+.precio { font-family: var(--f-display); font-weight: 900; font-size: 3.4rem; line-height: .9; }
 .precio small { font-size: 1.1rem; font-weight: 800; color: var(--tinta); }
 .perfora {
   height: 0; border-top: 2px dashed var(--linea); margin: 0 14px; position: relative;
@@ -138,7 +143,8 @@ p { margin: 0; text-wrap: pretty; }
 .perfora::before { left: -26px; } .perfora::after { right: -26px; }
 .boleto-talon { padding: 14px 18px 16px; display: grid; gap: 4px; }
 .fecha-dura { font-family: var(--f-display); font-weight: 900; font-size: 1.9rem; line-height: 1; text-transform: uppercase; }
-.fecha-dura em { font-style: normal; color: var(--sello); }
+.fecha-dura em { font-style: normal; text-decoration: underline 3px; text-underline-offset: 4px; }
+.como-pagas { font-size: .875rem; font-weight: 700; }
 
 /* Contador: una regla de 1,000 */
 .contador { display: grid; gap: 6px; }
@@ -157,7 +163,7 @@ p { margin: 0; text-wrap: pretty; }
 /* Evidencia del premio */
 .evidencia { position: relative; border: 1.5px solid var(--tinta); border-radius: var(--r); padding: 14px; display: grid; gap: 10px; background: var(--papel); }
 .evidencia svg { width: 100%; height: auto; display: block; color: var(--tinta); }
-.evidencia figcaption { font-size: .875rem; color: var(--tinta-2); }
+.evidencia figcaption { font-size: .875rem; color: var(--tinta-2); text-wrap: pretty; }
 .sello-goma {
   position: absolute; top: 18px; right: 14px; transform: rotate(-7deg);
   border: 2.5px solid var(--sello-texto); color: var(--sello-texto); border-radius: 4px;
@@ -179,9 +185,9 @@ p { margin: 0; text-wrap: pretty; }
 .reglas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
 .chip {
   border: 1.5px solid var(--tinta); background: var(--papel); border-radius: 4px;
-  padding: 8px 6px; font-size: .875rem; font-weight: 700; line-height: 1.15; min-height: 44px;
+  padding: 8px 6px; font-size: .875rem; font-weight: 700; line-height: 1.3; min-height: 44px;
 }
-.chip[aria-checked="true"] { background: var(--tinta); color: var(--sobre-tinta); }
+.chip[aria-pressed="true"] { background: var(--carton); border-width: 2px; box-shadow: inset 0 -4px 0 var(--tinta); }
 .regla-cfg { display: grid; gap: 8px; background: var(--carton); border-radius: var(--r); padding: 12px; }
 .campos { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; }
 .campo { display: grid; gap: 4px; font-size: .8125rem; font-weight: 700; }
@@ -199,7 +205,7 @@ p { margin: 0; text-wrap: pretty; }
 }
 .btn.sello { background: var(--sello); color: var(--sello-tx); }
 .btn.linea { background: transparent; color: var(--tinta); border: 1.5px solid var(--tinta); }
-.btn.chico { min-height: 36px; padding: 6px 10px; font-size: .875rem; }
+.btn.chico { min-height: 44px; padding: 6px 12px; font-size: .875rem; }
 .btn:disabled { opacity: .45; cursor: not-allowed; }
 .link { background: none; border: 0; padding: 0; text-decoration: underline; text-underline-offset: 3px; font-weight: 700; font-size: .875rem; }
 
@@ -219,30 +225,30 @@ p { margin: 0; text-wrap: pretty; }
 .centena .rng small { font-weight: 600; color: var(--tinta-2); font-size: .8rem; }
 .centena .mini { width: 80%; height: 4px; background: var(--carton); border-radius: 2px; overflow: hidden; }
 .centena .mini i { display: block; height: 100%; background: var(--pacifico); }
-.centena[aria-selected="true"] { border-color: var(--tinta); background: var(--tinta); color: var(--sobre-tinta); }
-.centena[aria-selected="true"] .rng small { color: inherit; opacity: .75; }
-.centena[aria-selected="true"] .mini { background: #FFFFFF33; }
+.centena[aria-selected="true"] { border: 2px solid var(--tinta); background: var(--carton); box-shadow: inset 0 -4px 0 var(--tinta); }
+.centena[aria-selected="true"] .rng small { color: var(--tinta); }
+.centena[aria-selected="true"] .mini { background: var(--papel); }
 .centena .badge {
   position: absolute; top: -7px; right: -5px; background: var(--sello); color: var(--sello-tx);
   font-size: .6875rem; font-weight: 700; border-radius: 999px; padding: 0 6px; line-height: 1.5;
 }
 
 .cuadricula-wrap { display: grid; gap: 6px; }
-.ejes { display: grid; grid-template-columns: 1.1rem repeat(10, minmax(0, 1fr)); gap: 3px; font-family: var(--f-folio); font-size: .6875rem; color: var(--tinta-2); text-align: center; }
+.ejes { display: grid; grid-template-columns: 1.1rem repeat(10, minmax(0, 1fr)); gap: 3px; font-family: var(--f-folio); font-size: .8125rem; font-weight: 700; color: var(--tinta-2); text-align: center; }
 .cuadricula-fila { display: grid; grid-template-columns: 1.1rem minmax(0, 1fr); gap: 3px; }
-.ejes-y { display: grid; grid-template-rows: repeat(10, minmax(0, 1fr)); gap: 3px; font-family: var(--f-folio); font-size: .6875rem; color: var(--tinta-2); align-items: center; text-align: center; }
+.ejes-y { display: grid; grid-template-rows: repeat(10, minmax(0, 1fr)); gap: 3px; font-family: var(--f-folio); font-size: .8125rem; font-weight: 700; color: var(--tinta-2); align-items: center; text-align: center; }
 .cuadricula { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 3px; }
 .b {
-  aspect-ratio: 1 / .92; border: 1px solid var(--linea); background: var(--papel); border-radius: 3px; padding: 0;
+  aspect-ratio: 1 / .92; border: 1.5px solid color-mix(in srgb, var(--tinta) 55%, transparent); background: var(--papel); border-radius: 3px; padding: 0;
   font-family: var(--f-display); font-weight: 800; font-size: clamp(.8rem, 3.6vw, .98rem); letter-spacing: .02em;
   display: grid; place-items: center; min-width: 0; transition: opacity .15s, transform .1s;
 }
-.b.vendido { background: var(--tinta); color: var(--tinta-2); border-color: var(--tinta); cursor: not-allowed; }
+.b.vendido { background: var(--vendido); color: var(--vendido-tx); border-color: var(--vendido); cursor: not-allowed; }
 .b.apartado { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--apartado) 55%, transparent) 0 3px, transparent 3px 7px), var(--papel); color: var(--tinta-2); border-color: var(--apartado); cursor: not-allowed; }
 .b.tuyo { background: var(--sello); color: var(--sello-tx); border-color: var(--sello); }
 /* Apartado por ti: el rayado de "apartado", pero con el contorno rojo de lo tuyo */
 .b.mio { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--sello) 40%, transparent) 0 3px, transparent 3px 7px), var(--papel); color: var(--tinta); border: 2px solid var(--sello); }
-.b.mio-pagado { background: var(--tinta); color: var(--sobre-tinta); border: 2px solid var(--sello); }
+.b.mio-pagado { background: var(--vendido); color: #FFFFFF; border: 2px solid var(--sello); }
 .b.libre:active { transform: scale(.94); }
 .filtrando .b.fuera { opacity: .16; }
 .filtrando .b.fuera.tuyo, .filtrando .b.fuera.mio, .filtrando .b.fuera.mio-pagado { opacity: 1; }
@@ -250,8 +256,8 @@ p { margin: 0; text-wrap: pretty; }
 
 .leyenda { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .8125rem; color: var(--tinta-2); }
 .leyenda span { display: inline-flex; align-items: center; gap: 6px; }
-.leyenda i { width: 16px; height: 16px; border-radius: 3px; display: inline-block; border: 1px solid var(--linea); background: var(--papel); }
-.leyenda i.v { background: var(--tinta); border-color: var(--tinta); }
+.leyenda i { width: 16px; height: 16px; border-radius: 3px; display: inline-block; border: 1.5px solid color-mix(in srgb, var(--tinta) 55%, transparent); background: var(--papel); }
+.leyenda i.v { background: var(--vendido); border-color: var(--vendido); }
 .leyenda i.a { background: repeating-linear-gradient(135deg, var(--apartado) 0 2px, transparent 2px 5px); border-color: var(--apartado); }
 .leyenda i.t { background: var(--sello); border-color: var(--sello); }
 .leyenda i.m { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--sello) 40%, transparent) 0 2px, transparent 2px 5px), var(--papel); border: 2px solid var(--sello); }
@@ -285,7 +291,7 @@ p { margin: 0; text-wrap: pretty; }
 .evento .n { font-family: var(--f-display); font-weight: 900; font-size: 1.8rem; line-height: 1; }
 .evento.vacio { border-style: dashed; border-color: var(--linea); color: var(--tinta-2); }
 .evento .estado { font-size: .75rem; font-weight: 700; }
-.evento .estado.vivo { color: var(--sello); }
+.evento .estado.vivo { color: var(--pacifico); }
 
 .pie { font-size: .875rem; color: var(--tinta-2); display: grid; gap: 6px; padding-block: 24px 28px; }
 
@@ -300,14 +306,18 @@ p { margin: 0; text-wrap: pretty; }
   content: ""; position: absolute; left: 10px; right: 10px; top: 5px; height: 2px;
   background: repeating-linear-gradient(90deg, var(--sobre-tinta) 0 6px, transparent 6px 12px); opacity: .35;
 }
-.talon-fila { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.talon-fila { display: grid; gap: 8px; }
+.talon-accion { display: flex; align-items: center; gap: 10px; }
+.talon-accion .btn { margin-left: auto; flex: none; }
+.mis:empty + .btn { flex: 1; }
 .talon .msg { font-size: .875rem; line-height: 1.3; min-width: 0; }
+.talon .msg:empty { display: none; }
 .talon .msg b { color: inherit; text-decoration: underline 2px var(--sello); text-underline-offset: 3px; }
-.mis { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; min-height: 0; }
+.mis { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; min-width: 0; }
 .mis:empty { display: none; }
 .mis button {
   flex: none; border: 0; border-radius: 3px; background: var(--sello); color: var(--sello-tx);
-  font-family: var(--f-display); font-weight: 900; font-size: 1.1rem; padding: 3px 8px; line-height: 1.2;
+  font-family: var(--f-display); font-weight: 900; font-size: 1.2rem; padding: 0 10px; min-height: 44px; min-width: 44px; line-height: 1;
 }
 .mis button span { font-family: var(--f-texto); font-weight: 400; font-size: .8rem; opacity: .8; margin-left: 4px; }
 .talon .btn.sello { white-space: nowrap; }
@@ -322,6 +332,9 @@ p { margin: 0; text-wrap: pretty; }
 .ma-folio { font-family: var(--f-folio); font-weight: 700; }
 #ma-detalle { display: contents; }
 .ma-nums { flex-basis: 100%; }
+.mi-apartado:not(.solo) .ma-nums, .mi-apartado:not(.solo) .ma-folio { display: none; }
+.mi-apartado:not(.solo) { padding-bottom: 8px; }
+.mi-apartado:not(.solo) .ma-txt { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; }
 .ma-reloj { font-family: var(--f-display); font-weight: 900; font-size: 1.4rem; line-height: 1; font-variant-numeric: tabular-nums; }
 .mi-apartado .btn { background: var(--sobre-tinta); color: var(--tinta); white-space: nowrap; min-height: 44px; }
 .mi-apartado[data-estado="vencido"] .ma-reloj { text-decoration: line-through; opacity: .7; }
@@ -330,8 +343,8 @@ p { margin: 0; text-wrap: pretty; }
 .talon .btn:disabled { opacity: .5; }
 
 .toast {
-  position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); width: max-content; max-width: 92%;
-  background: var(--tinta); color: var(--sobre-tinta); border: 1.5px solid var(--sobre-tinta); padding: 8px 14px; border-radius: 4px; font-weight: 700; font-size: .875rem;
+  font-weight: 700; font-size: .9375rem; line-height: 1.3; padding: 2px 0 10px;
+  border-bottom: 1px dashed color-mix(in srgb, var(--sobre-tinta) 35%, transparent);
 }
 
 /* ---------- Hoja de apartado ---------- */
@@ -349,6 +362,8 @@ p { margin: 0; text-wrap: pretty; }
 .hoja form { display: grid; gap: 12px; }
 .hoja .campo input { width: 100%; font-family: var(--f-texto); font-weight: 400; font-size: 1.05rem; letter-spacing: 0; }
 .error { color: var(--sello-texto); font-size: .875rem; font-weight: 700; }
+.campo .error { font-family: var(--f-texto); letter-spacing: 0; }
+.campo input[aria-invalid="true"] { border-color: var(--sello-texto); border-width: 2px; }
 .resumen { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .resumen .n { background: var(--sello); color: var(--sello-tx); font-family: var(--f-display); font-weight: 900; font-size: 1.1rem; padding: 2px 8px; border-radius: 3px; }
 
@@ -371,12 +386,13 @@ p { margin: 0; text-wrap: pretty; }
 }
 .aviso { font-size: .8125rem; color: var(--tinta-2); }
 .ficha { margin: 2px 0 0; display: grid; border: 1.5px solid var(--tinta); border-radius: var(--r); background: var(--papel); }
-.ficha > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "dt btn" "dd btn"; gap: 2px 10px; align-items: center; padding: 8px 10px; }
+.ficha > div { display: grid; gap: 2px; padding: 8px 10px; }
 .ficha > div + div { border-top: 1px dashed var(--linea); }
-.ficha dt { grid-area: dt; font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tinta-2); }
-.ficha dd { grid-area: dd; margin: 0; min-width: 0; font-family: var(--f-folio); font-weight: 700; font-size: 1rem; overflow-wrap: anywhere; }
+.ficha dt { font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tinta-2); }
+.ficha dd { margin: 0; min-width: 0; font-family: var(--f-folio); font-weight: 700; font-size: 1rem; overflow-wrap: anywhere; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ficha dd > span { min-width: 0; }
 .ficha dd.texto { font-family: var(--f-texto); }
-.ficha .btn { grid-area: btn; min-height: 44px; }
+.ficha .btn { flex: none; min-height: 44px; }
 #c-clabe { font-size: .875rem; letter-spacing: 0; }
 .alerta { border-left: 0; background: var(--carton); border-radius: var(--r); padding: 10px 12px; font-size: .875rem; }
 .alerta b { font-family: var(--f-folio); }
@@ -448,7 +464,7 @@ p { margin: 0; text-wrap: pretty; }
 /* ---------- Notas del concepto ---------- */
 .notas { display: grid; gap: 28px; font-size: .9375rem; }
 .notas > header { display: grid; gap: 10px; border-top: 2px solid var(--tinta); padding-top: 18px; }
-.notas h1 { font-size: clamp(2.6rem, 6vw, 3.8rem); text-transform: uppercase; }
+.notas header h2 { font-size: clamp(2.6rem, 6vw, 3.8rem); }
 .notas h3 { font-size: 1.5rem; text-transform: uppercase; }
 .notas .lead { font-size: 1.125rem; max-width: 60ch; }
 .notas p, .notas li { max-width: 62ch; }
@@ -485,7 +501,7 @@ p { margin: 0; text-wrap: pretty; }
   <main class="app" id="app">
     <div class="app-inner">
       <div class="top">
-        <div class="marca" aria-label="Solo Mil"><span>SOLO</span><span>MIL</span></div>
+        <p class="marca"><span>SOLO</span> <span>MIL</span></p>
         <div class="vista" role="group" aria-label="Cambiar vista">
           <button type="button" id="v-cliente" aria-pressed="true">Cliente</button>
           <button type="button" id="v-gestion" aria-pressed="false">Gestión</button>
@@ -496,13 +512,13 @@ p { margin: 0; text-wrap: pretty; }
       <div id="vista-cliente">
         <article class="boleto" aria-labelledby="premio-titulo">
           <div class="boleto-cuerpo">
-            <p class="eyebrow">Rifa <span class="folio">#1</span> · Combo “Arranca tu negocio”</p>
             <h1 id="premio-titulo">Congelador, hielera y báscula</h1>
-            <p class="valor num">Valor del premio: $12,000</p>
+            <p class="valor num">Rifa <span class="folio">#1</span> · combo “Arranca tu negocio” · vale $12,000</p>
             <div class="precio-fila">
               <span class="precio num">$25 <small>el boleto</small></span>
               <span class="pista">Solo 1,000 boletos. Tú eliges tu número.</span>
             </div>
+            <p class="como-pagas">Pagas por transferencia SPEI · tienes 2 h · no se cobra nada ahora</p>
           </div>
           <div class="perfora" aria-hidden="true"></div>
           <div class="boleto-talon">
@@ -533,7 +549,7 @@ p { margin: 0; text-wrap: pretty; }
               <text x="115" y="112" text-anchor="middle" fill="currentColor" style="font: 800 15px var(--f-display); letter-spacing:.08em">FOTO REAL AQUÍ</text>
             </svg>
             <figcaption>Aquí va la foto que tomamos con el premio ya comprado, en nuestras manos. Nunca una foto de catálogo.</figcaption>
-            <div class="sello-goma" aria-hidden="true">Ya lo<br>tenemos<small>03·NOV·26</small></div>
+            <p class="sello-goma"><span aria-hidden="true">Ya lo<br>tenemos<small>03·NOV·26</small></span><span class="vh">Sello: ya lo tenemos desde el 3 de noviembre de 2026.</span></p>
           </figure>
         </section>
 
@@ -559,7 +575,7 @@ p { margin: 0; text-wrap: pretty; }
             <div class="prob-big num">1<small>en 1,000</small></div>
             <p>Cada boleto compite contra 999, no contra medio millón. Con 5 boletos tienes <b>1 en 200</b>.</p>
           </div>
-          <div class="comparativa num" aria-label="Comparación de probabilidades con la compra mínima">
+          <div class="comparativa num" role="group" aria-label="Comparación de probabilidades con la compra mínima">
             <div><span>Aquí, 1 boleto</span><span class="barra"><i style="width:100%"></i></span></div>
             <div><span>Rifas de 500 mil boletos, compra mínima</span><span class="barra"><i style="width:10%"></i></span></div>
           </div>
@@ -569,13 +585,13 @@ p { margin: 0; text-wrap: pretty; }
         <section class="seccion" aria-labelledby="h-elige" id="elige">
           <h2 id="h-elige">Elige tu número</h2>
           <p>Tú pones la regla y te enseñamos cuáles quedan libres.</p>
-          <div class="reglas" role="radiogroup" aria-label="Regla de búsqueda" id="reglas">
-            <button type="button" class="chip" role="radio" aria-checked="false" data-regla="telefono">Mi teléfono</button>
-            <button type="button" class="chip" role="radio" aria-checked="false" data-regla="termina">Termina en</button>
-            <button type="button" class="chip" role="radio" aria-checked="false" data-regla="contiene">Trae un</button>
-            <button type="button" class="chip" role="radio" aria-checked="false" data-regla="exacto">Uno exacto</button>
-            <button type="button" class="chip" role="radio" aria-checked="false" data-regla="capicua">Capicúas</button>
-            <button type="button" class="chip" role="radio" aria-checked="false" data-regla="seguidos">Seguiditos</button>
+          <div class="reglas" role="group" aria-label="Regla de búsqueda" id="reglas">
+            <button type="button" class="chip" aria-pressed="false" data-regla="telefono">Mi teléfono</button>
+            <button type="button" class="chip" aria-pressed="false" data-regla="termina">Termina en</button>
+            <button type="button" class="chip" aria-pressed="false" data-regla="contiene">Trae un</button>
+            <button type="button" class="chip" aria-pressed="false" data-regla="exacto">Uno exacto</button>
+            <button type="button" class="chip" aria-pressed="false" data-regla="capicua">Capicúas</button>
+            <button type="button" class="chip" aria-pressed="false" data-regla="seguidos">Seguiditos</button>
           </div>
           <div class="regla-cfg" id="regla-cfg" hidden>
             <div class="campos" id="campos"></div>
@@ -584,13 +600,14 @@ p { margin: 0; text-wrap: pretty; }
           </div>
 
           <div class="centenas" role="tablist" aria-label="Centenas" id="centenas"></div>
-          <div class="cuadricula-wrap">
+          <div class="cuadricula-wrap" role="tabpanel" id="panel-centena">
             <div class="ejes" aria-hidden="true"><span></span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></div>
             <div class="cuadricula-fila">
               <div class="ejes-y" aria-hidden="true" id="ejes-y"></div>
-              <div class="cuadricula" id="cuadricula" role="group" aria-label="Boletos"></div>
+              <div class="cuadricula" id="cuadricula" role="group" aria-label="Boletos" aria-describedby="cuad-ayuda"></div>
             </div>
           </div>
+          <p class="vh" id="cuad-ayuda">Muévete entre boletos con las flechas. Enter o espacio elige el boleto.</p>
           <div class="leyenda">
             <span><i></i>Libre</span>
             <span><i class="a"></i>Apartado (2 h)</span>
@@ -614,7 +631,7 @@ p { margin: 0; text-wrap: pretty; }
           <h2 id="h-sorteo">Cómo sale el ganador</h2>
           <div class="billete">
             <p class="eyebrow">Ejemplo · premio mayor de la Lotería Nacional</p>
-            <div class="cifras" aria-label="Número del premio mayor de ejemplo: 4 8 4 8 7. Las tres últimas cifras son 4 8 7.">
+            <div class="cifras" role="img" aria-label="Número del premio mayor de ejemplo: 4 8 4 8 7. Las tres últimas cifras son 4 8 7.">
               <span>4</span><span>8</span><span class="g">4</span><span class="g">8</span><span class="g">7</span>
             </div>
             <p>Gana el boleto <b class="num">487</b>.</p>
@@ -646,10 +663,12 @@ p { margin: 0; text-wrap: pretty; }
             </div>
             <button type="button" class="btn chico" id="ma-btn">Ver cómo pagar</button>
           </div>
-          <div class="mis" id="mis" aria-label="Tus números"></div>
           <div class="talon-fila" id="talon-fila">
             <p class="msg" id="talon-msg"></p>
-            <button type="button" class="btn sello" id="btn-apartar" disabled>Apartar</button>
+            <div class="talon-accion">
+              <div class="mis" id="mis" role="group" aria-label="Tus números elegidos"></div>
+              <button type="button" class="btn sello" id="btn-apartar">Elegir mi número</button>
+            </div>
           </div>
         </div>
       </div>
@@ -682,7 +701,7 @@ p { margin: 0; text-wrap: pretty; }
   <aside class="notas" aria-labelledby="n-titulo">
     <header>
       <p class="eyebrow">Concepto visual · Rifa #1</p>
-      <h1 id="n-titulo">Un boleto impreso, no un casino</h1>
+      <h2 id="n-titulo">Un boleto impreso, no un casino</h2>
       <p class="lead">El que compra se pregunta una sola cosa: ¿esto es fraude? En la costa, lo que da confianza es papel con folio, fecha y sello. La interfaz toma eso prestado: boleto con talón perforado, folios de máquina de escribir y un sello rojo cuando algo es tuyo.</p>
     </header>
 
@@ -745,14 +764,18 @@ p { margin: 0; text-wrap: pretty; }
       <div style="display:grid;gap:14px">
         <h2 id="hoja-titulo">¿A nombre de quién?</h2>
         <div class="resumen" id="resumen-datos"></div>
+        <p class="como-pagas">Pagas por transferencia SPEI · tienes 2 h · no se cobra nada ahora</p>
         <form id="form-datos" novalidate>
-          <label class="campo" for="in-nombre">Nombre
-            <input id="in-nombre" name="nombre" autocomplete="name" placeholder="Como aparece en tu INE">
-          </label>
-          <label class="campo" for="in-wa">WhatsApp (10 dígitos)
-            <input id="in-wa" name="wa" inputmode="numeric" autocomplete="tel-national" placeholder="958 123 4567">
-          </label>
-          <p class="error" id="form-error" role="alert" hidden></p>
+          <div class="campo">
+            <label for="in-nombre">Nombre</label>
+            <input id="in-nombre" name="nombre" autocomplete="name" placeholder="Como aparece en tu INE" aria-describedby="err-nombre">
+            <p class="error" id="err-nombre" hidden></p>
+          </div>
+          <div class="campo">
+            <label for="in-wa">WhatsApp (10 dígitos)</label>
+            <input id="in-wa" name="wa" inputmode="numeric" autocomplete="tel-national" placeholder="958 123 4567" aria-describedby="err-wa">
+            <p class="error" id="err-wa" hidden></p>
+          </div>
           <p class="alerta" id="fuera-horario" hidden></p>
           <button class="btn sello" type="submit" id="btn-confirmar">Apartar mis números</button>
           <button class="btn linea" type="button" id="btn-cancelar">Seguir eligiendo</button>
@@ -773,7 +796,7 @@ p { margin: 0; text-wrap: pretty; }
         <div id="c-tiempo">
           <p class="eyebrow">Tienes para pagar</p>
           <p class="reloj num" id="c-reloj" aria-live="off">2:00:00</p>
-          <p class="aviso">Transfiere y avísanos con «Ya transferí» antes de que llegue a cero. Si no, tus números se liberan solos. Después de avisar, ya no vencen.</p>
+          <p class="aviso">Transfiere y mándanos tu comprobante antes de que llegue a cero. Si no, tus números se liberan solos. Al mandarlo, el reloj se detiene y ya no vencen.</p>
         </div>
         <div class="recibido" id="c-recibido" hidden>
           <p><b>Recibimos tu aviso.</b> Tus números siguen apartados mientras revisamos tu pago. Ya no vencen.</p>
@@ -785,18 +808,18 @@ p { margin: 0; text-wrap: pretty; }
             <dl class="ficha">
               <div><dt>Para</dt><dd class="texto" id="c-titular">TITULAR DE EJEMPLO</dd></div>
               <div><dt>Banco</dt><dd class="texto">Banco de ejemplo</dd></div>
-              <div><dt>CLABE</dt><dd id="c-clabe">0123 4567 8901 2345 67</dd><button type="button" class="btn linea chico" data-copiar="c-clabe" aria-label="Copiar CLABE">Copiar</button></div>
-              <div><dt>Monto</dt><dd id="c-monto" class="num"></dd><button type="button" class="btn linea chico" data-copiar="c-monto" aria-label="Copiar monto">Copiar</button></div>
-              <div><dt>Concepto</dt><dd id="c-folio2"></dd><button type="button" class="btn linea chico" data-copiar="c-folio2" aria-label="Copiar concepto">Copiar</button></div>
+              <div><dt>CLABE</dt><dd><span id="c-clabe">0123 4567 8901 2345 67</span><button type="button" class="btn linea chico" data-copiar="c-clabe" aria-label="Copiar CLABE">Copiar</button></dd></div>
+              <div><dt>Monto</dt><dd><span id="c-monto" class="num"></span><button type="button" class="btn linea chico" data-copiar="c-monto" aria-label="Copiar monto">Copiar</button></dd></div>
+              <div><dt>Concepto</dt><dd><span id="c-folio2"></span><button type="button" class="btn linea chico" data-copiar="c-folio2" aria-label="Copiar concepto">Copiar</button></dd></div>
             </dl>
             <p class="alerta">Antes de enviar, tu banco te enseña a nombre de quién está la cuenta. Si no dice <b>TITULAR DE EJEMPLO</b>, no transfieras y escríbenos.</p>
           </div></li>
           <li><div>
-            <b>Mándanos tu comprobante por WhatsApp</b>
+            <b id="c-paso2">Ya que transferiste, mándanos tu comprobante</b>
+            <button type="button" class="btn sello" id="btn-wa">Ya transferí · mandar comprobante</button>
+            <span class="pista" id="c-wa-pista">Este botón detiene el reloj y abre WhatsApp con este mensaje ya escrito. Nuestro número: <b class="folio">958 000 0000</b></span>
             <div class="burbuja" id="c-mensaje"></div>
-            <button type="button" class="btn sello" id="btn-wa">Abrir WhatsApp con mi folio</button>
-            <span class="pista">Nuestro número: <b class="folio">958 000 0000</b></span>
-            <span class="aviso">En el sitio real este botón abre WhatsApp con el mensaje ya escrito. Aquí solo lo copia.</span>
+            <span class="aviso">En este prototipo, en lugar de abrir WhatsApp, copia el mensaje.</span>
           </div></li>
           <li><div>
             <b id="c-confirma">Te confirmamos en menos de 1 hora</b>
@@ -804,10 +827,9 @@ p { margin: 0; text-wrap: pretty; }
           </div></li>
         </ol>
         <div class="cierre">
-          <button type="button" class="btn" id="btn-transferi">Ya transferí</button>
           <button type="button" class="btn linea" id="btn-cerrar">Cerrar</button>
         </div>
-        <p class="aviso" id="c-cierre-aviso">«Ya transferí» detiene el reloj. Tu apartado queda guardado en este teléfono y en el link de tu mensaje; lo ves abajo, en el talón.</p>
+        <p class="aviso" id="c-cierre-aviso">Tu apartado queda guardado en este teléfono y en el link de tu mensaje. Lo ves abajo, en el talón.</p>
       </div>
     </div>
   </div>
@@ -885,9 +907,13 @@ p { margin: 0; text-wrap: pretty; }
   const linkDe = (folio) => location.href.split('#')[0] + '#' + folio;
   const reloj = (ms) => { const s = Math.max(0, Math.round(ms / 1000)); return `${Math.floor(s / 3600)}:${String(Math.floor(s % 3600 / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`; };
 
+  // Números elegidos que todavía no se apartan: se guardan para que una recarga no los borre
+  const LS_CARRITO = 'solomil.rifa1.carrito';
   const tuyos = new Set();
-  let centena = 4;
+  const guardarCarrito = () => { try { localStorage.setItem(LS_CARRITO, JSON.stringify([...tuyos])); } catch { /* sin almacenamiento */ } };
+  let centena = 0;
   let regla = null;
+  let foco = 0;   // posición (0–99) de la celda que recibe el Tab en la cuadrícula
   const valores = { termina: '7', contiene: '7', telefono: '', exacto: '', desde: '450', cuantos: '10' };
 
   // ---------- Reglas ----------
@@ -912,24 +938,46 @@ p { margin: 0; text-wrap: pretty; }
   for (let c = 0; c < 10; c++) {
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'centena'; b.setAttribute('role', 'tab'); b.dataset.c = c;
+    b.id = 'tab-c' + c; b.setAttribute('aria-controls', 'panel-centena');
     b.innerHTML = `<span class="rng">${c}00<small>–${c}99</small></span><span class="mini"><i></i></span><span class="badge" hidden></span>`;
     b.addEventListener('click', () => { centena = c; render(); });
     elCent.appendChild(b);
   }
+  // Pestañas: flechas para cambiar de centena (activación inmediata)
+  elCent.addEventListener('keydown', (e) => {
+    const k = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 5, ArrowUp: -5 }[e.key];
+    let c = null;
+    if (k) c = (centena + k + 10) % 10;
+    else if (e.key === 'Home') c = 0;
+    else if (e.key === 'End') c = 9;
+    if (c === null) return;
+    e.preventDefault(); centena = c; render(); elCent.children[c].focus();
+  });
   for (let r = 0; r < 10; r++) { const s = document.createElement('span'); s.textContent = r; elEjeY.appendChild(s); }
   const celdas = [];
   for (let i = 0; i < 100; i++) {
     const b = document.createElement('button');
-    b.type = 'button'; b.className = 'b';
-    b.addEventListener('click', () => tocar(centena * 100 + i));
+    b.type = 'button'; b.className = 'b'; b.tabIndex = -1;
+    b.addEventListener('click', () => { foco = i; tocar(centena * 100 + i); });
+    b.addEventListener('focus', () => { if (foco !== i) { celdas[foco].tabIndex = -1; foco = i; b.tabIndex = 0; } });
     elGrid.appendChild(b); celdas.push(b);
   }
+  // Cuadrícula: una sola parada de Tab; las flechas se mueven por fila (decena) y columna (unidad)
+  elGrid.addEventListener('keydown', (e) => {
+    const f = Math.floor(foco / 10), c = foco % 10;
+    const destino = { ArrowRight: c < 9 ? foco + 1 : null, ArrowLeft: c > 0 ? foco - 1 : null,
+      ArrowDown: f < 9 ? foco + 10 : null, ArrowUp: f > 0 ? foco - 10 : null,
+      Home: f * 10, End: f * 10 + 9, PageUp: c, PageDown: 90 + c }[e.key];
+    if (destino === undefined) return;
+    e.preventDefault();
+    if (destino !== null) celdas[destino].focus();
+  });
 
   function tocar(n) {
     if (tuyos.has(n)) { tuyos.delete(n); render(); return; }
     const mio = misNumeros().get(n);
     if (mio) {
-      const que = { apartado: `Paga antes de ${reloj(mio.vence - Date.now())}.`, transferido: 'Estamos revisando tu pago.', pagado: 'Ya está pagado.' }[mio.estado];
+      const que = { apartado: `Te quedan ${reloj(mio.vence - Date.now())} para pagar.`, transferido: 'Estamos revisando tu pago.', pagado: 'Ya está pagado.' }[mio.estado];
       return aviso(`El ${pad(n)} es tuyo (${mio.folio}). ${que}`);
     }
     if (estado[n] === 'vendido') return aviso(`El ${pad(n)} ya está vendido.`);
@@ -937,10 +985,11 @@ p { margin: 0; text-wrap: pretty; }
     tuyos.add(n); render();
   }
 
+  // El aviso vive dentro del talón, para no tapar la cuadrícula
   let tAviso;
   function aviso(txt) {
     const t = $('toast'); t.textContent = txt; t.hidden = false;
-    clearTimeout(tAviso); tAviso = setTimeout(() => { t.hidden = true; }, 2200);
+    clearTimeout(tAviso); tAviso = setTimeout(() => { t.hidden = true; }, 3500);
   }
 
   // Reglas UI
@@ -950,7 +999,7 @@ p { margin: 0; text-wrap: pretty; }
     pintarCampos(); saltarACoincidencia(); render();
   });
   function pintarCampos() {
-    document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-checked', String(c.dataset.regla === regla)));
+    document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c.dataset.regla === regla)));
     const cfg = $('regla-cfg'); cfg.hidden = !regla;
     if (!regla) return;
     const R = REGLAS[regla];
@@ -1017,6 +1066,7 @@ p { margin: 0; text-wrap: pretty; }
       let lib = 0, match = 0;
       for (let i = c * 100; i < c * 100 + 100; i++) { if (estado[i] === 'libre') { lib++; if (filtrando && coincide(i)) match++; } }
       b.setAttribute('aria-selected', String(c === centena));
+      b.tabIndex = c === centena ? 0 : -1;
       b.setAttribute('aria-label', `${c}00 a ${c}99, ${lib} libres`);
       b.querySelector('.mini i').style.width = lib + '%';
       const badge = b.querySelector('.badge');
@@ -1024,6 +1074,7 @@ p { margin: 0; text-wrap: pretty; }
     });
 
     // cuadrícula
+    $('panel-centena').setAttribute('aria-labelledby', 'tab-c' + centena);
     elGrid.classList.toggle('filtrando', !!filtrando);
     const mios = misNumeros();
     celdas.forEach((b, i) => {
@@ -1037,6 +1088,7 @@ p { margin: 0; text-wrap: pretty; }
       b.setAttribute('aria-label', `Boleto ${s}, ${desc}${m ? ', cumple la regla' : ''}`);
       b.setAttribute('aria-pressed', String(st === 'tuyo'));
       b.setAttribute('aria-disabled', String(st === 'vendido' || st === 'apartado'));
+      b.tabIndex = i === foco ? 0 : -1;
     });
 
     renderResultado();
@@ -1049,22 +1101,26 @@ p { margin: 0; text-wrap: pretty; }
     const ya = misNumeros().size, total = k + ya;   // lo que ya apartaste cuenta para la escalera
     $('mis').innerHTML = lista.map(n => `<button type="button" data-quitar="${n}" aria-label="Quitar ${pad(n)}">${pad(n)}<span aria-hidden="true">×</span></button>`).join('');
     let msg;
-    if (!k) msg = 'Toca un número libre para empezar.';
+    if (!k) msg = '';
     else if (total < 5) msg = `Te ${5 - total === 1 ? 'falta <b>1</b>' : `faltan <b>${5 - total}</b>`} para el sorteo de $1,000.`;
     else if (total < 10) msg = `Ya entras al sorteo de $1,000. Con <b>${10 - total}</b> más llevas regalo.`;
     else if (total < 20) msg = `Llevas regalo. Con <b>${20 - total}</b> más te lo llevamos a tu casa.`;
     else msg = 'Llevas regalo y entrega a domicilio.';
     if (k) {
-      const cuenta = ya ? `${k} ${k === 1 ? 'nuevo' : 'nuevos'} + ${ya} ${ya === 1 ? 'apartado' : 'apartados'} = ${total}` : `${k} ${k === 1 ? 'boleto' : 'boletos'}`;
-      msg = `<span class="num">${cuenta} · 1 en ${Math.round(N / total).toLocaleString('es-MX')}</span><br>` + msg;
+      const cuenta = ya ? `${k} + ${ya} ${ya === 1 ? 'apartado' : 'apartados'} = ${total}` : `${k} ${k === 1 ? 'boleto' : 'boletos'}`;
+      msg = `<span class="num">${cuenta} · 1 en ${Math.round(N / total).toLocaleString('es-MX')}.</span> ` + msg;
     }
     $('talon-msg').innerHTML = msg;
     const btn = $('btn-apartar');
-    btn.disabled = !k;
-    btn.textContent = k ? `Apartar · ${pesos(k * CFG.precio)}` : 'Apartar';
+    btn.textContent = k ? `Apartar · ${pesos(k * CFG.precio)}` : 'Elegir mi número';
+    btn.dataset.accion = k ? 'apartar' : 'elegir';
+    guardarCarrito();
     document.querySelectorAll('#escalera li').forEach(li => li.classList.toggle('logrado', total >= +li.dataset.min));
     renderMiApartado();
-    $('talon-fila').hidden = !k && !$('mi-apartado').hidden;
+    // Con un apartado vivo y nada nuevo elegido, el talón muestra solo el apartado.
+    // Si venció, se canceló o ya está pagado, vuelve a ofrecer elegir.
+    const ap = apartadoVisible();
+    $('talon-fila').hidden = !k && !!ap && PENDIENTE(ap);
     $('mi-apartado').classList.toggle('solo', $('talon-fila').hidden);
   }
 
@@ -1080,7 +1136,7 @@ p { margin: 0; text-wrap: pretty; }
     const resto = ap.vence - Date.now();
     const nums = ap.nums.map(pad).join(', ');
     const T = {
-      apartado:    ['Apartado · paga antes de', `<span class="ma-reloj num">${reloj(resto)}</span><span class="ma-nums num">Tus números: ${nums}</span>`, 'Ver cómo pagar'],
+      apartado:    ['Apartado · te quedan', `<span class="ma-reloj num">${reloj(resto)}</span><span class="ma-nums num">Tus números: ${nums}</span>`, 'Cómo pagar'],
       transferido: ['Aviso recibido', `<span><span class="num">${nums}</span> siguen apartados mientras revisamos tu pago.</span>`, 'Ver datos'],
       pagado:      ['Pagado · ya son tuyos', `<span class="num">${nums}</span>`, 'Ver boleto'],
       vencido:     ['Venció sin pago', `<span>Los números ${nums} se liberaron.</span>`, 'Quitar aviso'],
@@ -1105,31 +1161,60 @@ p { margin: 0; text-wrap: pretty; }
   // ---------- Hoja de apartado ----------
   let ultimo = null, focoPrevio = null;
   $('btn-apartar').addEventListener('click', () => {
+    if ($('btn-apartar').dataset.accion === 'elegir') {
+      $('elige').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+      $('h-elige').setAttribute('tabindex', '-1'); $('h-elige').focus({ preventScroll: true });
+      return;
+    }
     focoPrevio = document.activeElement;
     $('resumen-datos').innerHTML = [...tuyos].sort((a, b) => a - b).map(n => `<span class="n">${pad(n)}</span>`).join('') + `<b class="num" style="margin-left:4px">${pesos(tuyos.size * CFG.precio)}</b>`;
     if (!$('in-wa').value && valores.telefono.length === 10) $('in-wa').value = valores.telefono;
-    $('paso-datos').hidden = false; $('paso-listo').hidden = true; $('form-error').hidden = true;
+    $('paso-datos').hidden = false; $('paso-listo').hidden = true;
+    marcarError('nombre', ''); marcarError('wa', '');
     const fuera = !enHorario();
     $('fuera-horario').hidden = !fuera;
-    if (fuera) $('fuera-horario').textContent = `Ahora no estamos atendiendo (lunes a sábado, de 9:00 a 21:00). Puedes apartar: tienes 2 horas para transferir y avisarnos con «Ya transferí», y después de avisar tus números ya no vencen. Te confirmamos ${cuandoConfirmamos()}.`;
-    $('velo').hidden = false; $('in-nombre').focus();
+    if (fuera) $('fuera-horario').textContent = `Ahora no estamos atendiendo (lunes a sábado, de 9:00 a 21:00). Puedes apartar: tienes 2 horas para transferir y mandarnos tu comprobante. Al mandarlo, tus números ya no vencen. Te confirmamos ${cuandoConfirmamos()}.`;
+    abrirVelo(); $('in-nombre').focus();
   });
+  // Mientras la hoja está abierta, lo de atrás no recibe foco ni toques
+  const fondo = () => document.querySelectorAll('.franja, .layout');
+  function abrirVelo() { $('velo').hidden = false; fondo().forEach(el => { el.inert = true; }); }
   const cerrar = () => {
     $('velo').hidden = true;
+    fondo().forEach(el => { el.inert = false; });
     const destino = !$('mi-apartado').hidden ? $('ma-btn') : focoPrevio;
     if (destino && !destino.disabled) destino.focus();
   };
   $('btn-cancelar').addEventListener('click', cerrar);
   $('btn-cerrar').addEventListener('click', cerrar);
   $('velo').addEventListener('click', (e) => { if (e.target.id === 'velo') cerrar(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('velo').hidden) cerrar(); });
+  document.addEventListener('keydown', (e) => {
+    if ($('velo').hidden) return;
+    if (e.key === 'Escape') { cerrar(); return; }
+    if (e.key !== 'Tab') return;
+    // Respaldo de inert: el Tab da la vuelta dentro de la hoja
+    const enfocables = [...$('hoja').querySelectorAll('button, input, [tabindex="0"]')].filter(el => !el.disabled && el.offsetParent !== null);
+    if (!enfocables.length) return;
+    const primero = enfocables[0], ultimoEl = enfocables[enfocables.length - 1];
+    if (e.shiftKey && (document.activeElement === primero || !$('hoja').contains(document.activeElement))) { e.preventDefault(); ultimoEl.focus(); }
+    else if (!e.shiftKey && document.activeElement === ultimoEl) { e.preventDefault(); primero.focus(); }
+  });
+
+  // Cada campo dice su propio error
+  function marcarError(campo, txt) {
+    const inp = $('in-' + campo), err = $('err-' + campo);
+    err.textContent = txt; err.hidden = !txt;
+    if (txt) inp.setAttribute('aria-invalid', 'true'); else inp.removeAttribute('aria-invalid');
+  }
+  ['nombre', 'wa'].forEach(c => $('in-' + c).addEventListener('input', () => { if (!$('err-' + c).hidden) marcarError(c, ''); }));
 
   $('form-datos').addEventListener('submit', (e) => {
     e.preventDefault();
     const nombre = $('in-nombre').value.trim(), wa = $('in-wa').value.replace(/\D/g, '');
-    const err = $('form-error');
-    if (!nombre) { err.textContent = 'Escribe tu nombre. Lo usamos para entregarte el premio.'; err.hidden = false; $('in-nombre').focus(); return; }
-    if (wa.length !== 10) { err.textContent = `El WhatsApp lleva 10 dígitos y escribiste ${wa.length}.`; err.hidden = false; $('in-wa').focus(); return; }
+    marcarError('nombre', nombre ? '' : 'Escribe tu nombre. Lo usamos para entregarte el premio.');
+    marcarError('wa', wa.length === 10 ? '' : `El WhatsApp lleva 10 dígitos y escribiste ${wa.length}.`);
+    if (!nombre) { $('in-nombre').focus(); return; }
+    if (wa.length !== 10) { $('in-wa').focus(); return; }
     const nums = [...tuyos].sort((a, b) => a - b);
     nums.forEach(n => { estado[n] = 'apartado'; });
     const ap = { folio: CFG.prefijo + '-' + String(siguienteFolio++).padStart(4, '0'), nombre, wa, nums, creado: Date.now(), vence: Date.now() + CFG.minutos * 60000, estado: 'apartado', propio: true };
@@ -1161,20 +1246,17 @@ p { margin: 0; text-wrap: pretty; }
     $('c-sello').textContent = { apartado: 'Apartado', transferido: 'Aviso recibido', pagado: 'Pagado' }[ap.estado] || 'Apartado';
     $('c-cierre-aviso').hidden = ap.estado !== 'apartado';
     $('c-pasos').hidden = !pendiente;
-    $('btn-transferi').hidden = ap.estado !== 'apartado';
+    const avisa = ap.estado === 'apartado';
+    $('c-paso2').textContent = avisa ? 'Ya que transferiste, mándanos tu comprobante' : 'Si no lo has hecho, mándanos tu comprobante';
+    $('btn-wa').textContent = avisa ? 'Ya transferí · mandar comprobante' : 'Mandar comprobante por WhatsApp';
+    $('btn-wa').classList.toggle('sello', avisa); $('btn-wa').classList.toggle('linea', !avisa);
+    $('c-wa-pista').firstChild.textContent = avisa ? 'Este botón detiene el reloj y abre WhatsApp con este mensaje ya escrito. Nuestro número: ' : 'Abre WhatsApp con este mensaje ya escrito. Nuestro número: ';
     $('paso-datos').hidden = true; $('paso-listo').hidden = false;
-    $('velo').hidden = false;
+    abrirVelo();
     tic();
     $('hoja').scrollTop = 0;
     $('c-titulo').setAttribute('tabindex', '-1'); $('c-titulo').focus();
   }
-  $('btn-transferi').addEventListener('click', () => {
-    if (ultimo && ultimo.estado === 'apartado') {
-      ultimo.estado = 'transferido'; ultimo.avisado = Date.now(); guardarApartados();
-      bitacora.unshift({ t: Date.now(), txt: `${ultimo.folio} · el cliente dice que ya transfirió`, tipo: 'avisa' });
-    }
-    cerrar(); render();
-  });
 
   // Si el navegador no deja copiar, selecciona el texto para copiarlo a mano
   async function copiar(texto, btn, ok, el) {
@@ -1192,7 +1274,18 @@ p { margin: 0; text-wrap: pretty; }
     if (b.dataset.copiar === 'c-monto') v = v.replace(/[$,]/g, '');
     copiar(v, b, 'Copiado', $(b.dataset.copiar));
   }));
-  $('btn-wa').addEventListener('click', (e) => copiar($('c-mensaje').textContent, e.currentTarget, 'Mensaje copiado', $('c-mensaje')));
+  // Un solo toque: avisa que ya transferiste (el reloj se detiene) y abre WhatsApp con el comprobante.
+  // En producción: location.href = 'https://wa.me/52XXXXXXXXXX?text=' + encodeURIComponent(mensaje)
+  $('btn-wa').addEventListener('click', async () => {
+    const mensaje = $('c-mensaje').textContent;
+    if (ultimo && ultimo.estado === 'apartado') {
+      ultimo.estado = 'transferido'; ultimo.avisado = Date.now(); guardarApartados();
+      bitacora.unshift({ t: Date.now(), txt: `${ultimo.folio} · el cliente dice que ya transfirió`, tipo: 'avisa' });
+      render();
+      abrirComprobante(ultimo);
+    }
+    await copiar(mensaje, $('btn-wa'), 'Mensaje copiado', $('c-mensaje'));
+  });
 
   // ---------- Gestión ----------
   const TAG = { pago: 'PAGO', libera: 'LIBERA', vence: 'VENCE', deshace: 'DESHACE', aparta: 'APARTA', avisa: 'AVISA' };
@@ -1332,7 +1425,6 @@ p { margin: 0; text-wrap: pretty; }
   setInterval(tic, 1000);
   setInterval(renderGestion, 30000);
 
-  // Estado inicial: una regla de ejemplo ya puesta para que se vea el buscador
   // Link con folio (#SM1-0214): abre el comprobante si ese apartado está en este teléfono
   function abrirDesdeLink() {
     const h = decodeURIComponent(location.hash.slice(1));
@@ -1341,8 +1433,10 @@ p { margin: 0; text-wrap: pretty; }
   }
   window.addEventListener('hashchange', abrirDesdeLink);
 
-  regla = 'termina'; pintarCampos(); saltarACoincidencia();
-  if (!misApartados().length) for (let n = centena * 100; n < centena * 100 + 100 && tuyos.size < 2; n++) if (coincide(n) && estado[n] === 'libre') tuyos.add(n);
+  // Estado inicial: talón vacío. Solo regresan los números que esta persona ya había elegido y siguen libres.
+  try { (JSON.parse(localStorage.getItem(LS_CARRITO)) || []).forEach(n => { if (Number.isInteger(n) && estado[n] === 'libre') tuyos.add(n); }); } catch { /* sin carrito guardado */ }
+  if (tuyos.size) centena = Math.floor(Math.min(...tuyos) / 100);
+  pintarCampos();
   render();
   abrirDesdeLink();
 })();

@@ -36,14 +36,16 @@ Mil botones en un celular de gama baja son imposibles de navegar. Se dividen en 
 ### 2. El estado se ve en la forma, no solo en el color
 | Estado | Cómo se ve |
 | --- | --- |
-| Libre | Papel con borde fino. Se puede tocar. |
+| Libre | Papel con borde de 1.5 px en tinta al 55 %. Se puede tocar, y es lo que más resalta. |
 | Apartado | **Rayado** ámbar. No se puede tocar. Se libera solo a las 2 h. |
-| Vendido | **Relleno** añil. No se puede tocar. |
+| Vendido | **Relleno** añil. No se puede tocar. En oscuro es un añil medio y apagado (`--vendido`), para que lo más brillante siga siendo lo libre. |
 | Elegido por ti | **Rojo sello** relleno, texto blanco. Está en tu talón, todavía no apartado. |
 | Apartado por ti | **Rayado rojo con contorno rojo sello.** Es el rayado de "apartado" con la marca de lo tuyo. Al tocarlo: "El 437 es tuyo (SM1-0214). Paga antes de 1:52:10." |
 | Tuyo, pagado | **Relleno** añil con contorno rojo sello. Al tocarlo: "Ya está pagado." |
 
 Así se distingue con el sol de frente, en pantallas baratas y para personas que no distinguen colores.
+
+**El relleno añil solo significa "vendido".** Una regla elegida o la centena abierta se marcan con contorno grueso y una barra abajo, sobre cartulina; nunca con relleno, para no confundirse con lo vendido.
 
 ### 3. Tú pones las reglas
 Seis reglas, en este orden: **Mi teléfono**, Termina en, Trae un, Uno exacto, Capicúas, Seguiditos.
@@ -54,9 +56,13 @@ Seis reglas, en este orden: **Mi teléfono**, Termina en, Trae un, Uno exacto, C
 - Si quedan 20 o menos libres que cumplen, se ofrece "Agregar los N libres".
 
 ### 4. El talón: la única llamada a la acción
+**Al entrar, el talón está vacío.** No hay regla puesta ni números elegidos: un carrito que llega lleno parece truco. Su único botón dice "Elegir mi número" y lleva a la cuadrícula. El boleto principal y el formulario dicen antes de pedir datos: "Pagas por transferencia SPEI · tienes 2 h · no se cobra nada ahora".
+
+Los números que eliges se guardan en el teléfono, así que una recarga del navegador de Facebook no los borra; al volver, solo regresan los que siguen libres.
+
 Mientras tienes un apartado, el talón muestra tu folio, el tiempo y **tus números**. Lo que ya apartaste **cuenta para la escalera de premios**: si tienes 2 apartados y eliges 3 más, el talón dice "3 nuevos + 2 apartados = 5" y ya entras al sorteo de $1,000. *Suposición a validar:* la escalera es por persona en la rifa, no por compra.
 
-Fijo al pie. Muestra tus números (tocables para quitarlos), tu probabilidad ("1 en 500") y cuánto te falta para el siguiente escalón de la escalera de recompensas. El botón dice el monto exacto: "Apartar · $75".
+Fijo al pie. Muestra tus números (tocables para quitarlos, de 44 px), tu probabilidad ("1 en 500") y cuánto te falta para el siguiente escalón de la escalera de recompensas. El botón dice el monto exacto: "Apartar · $75". Los avisos ("El 487 ya está vendido") salen dentro del talón, no flotando encima de la cuadrícula.
 
 ### 5. Fecha dura arriba, siempre
 "Viernes 27 de noviembre, **vendido o no**" vive en el boleto principal, no escondido en las bases.
@@ -65,7 +71,7 @@ Fijo al pie. Muestra tus números (tocables para quitarlos), tu probabilidad ("1
 "1 en 1,000" en grande. Es nuestro diferenciador más defendible y nadie más lo dice.
 
 ### 7. Apartado → pago en tres pasos
-Después de apartar: folio con sello y hora, cuenta regresiva de 2 h, y tres pasos numerados (transferir por SPEI → mandar comprobante por WhatsApp → te confirmamos). El mensaje de WhatsApp ya va escrito con folio, números, total, nombre y el link al apartado. El cliente no teclea nada.
+Después de apartar: folio con sello y hora, cuenta regresiva de 2 h, y tres pasos numerados (transferir por SPEI → "Ya transferí · mandar comprobante" → te confirmamos). El mensaje de WhatsApp ya va escrito con folio, números, total, nombre y el link al apartado. El cliente no teclea nada.
 
 ### 7b. El pago dice a quién, cuánto y con qué concepto
 El momento de más miedo es transferirle a desconocidos. La hoja de pago lo trata así:
@@ -87,17 +93,20 @@ Para pagar, el comprador sale a la app de su banco, y el navegador de Facebook m
 
 | Estado | Qué dice el talón | Botón |
 | --- | --- | --- |
-| Apartado | "Paga antes de 1:52:10" | Ver cómo pagar |
+| Apartado | "Apartado · te quedan 1:52:10" (no "paga antes de", que se lee como hora del día) | Cómo pagar |
 | Aviso recibido | "Tus números siguen apartados mientras revisamos tu pago." Sin reloj. | Ver datos |
 | Pagado | "Ya son tuyos" con los números | Ver boleto |
-| Vencido / cancelado | "Los números se liberaron" | Quitar aviso |
+| Vencido / cancelado | "Los números se liberaron" | Quitar aviso, y abajo vuelve "Elegir mi número" |
 
-- El botón final de la hoja ya no dice "Listo" (sonaba a que todo había terminado). Ahora son "Ya transferí" y "Cerrar", con la nota de que el apartado queda guardado.
+- Si además eliges números nuevos, el apartado se resume en una línea (estado y reloj) para que el talón no tape la cuadrícula.
+- La hoja termina en "Cerrar", con la nota de que el apartado queda guardado. No dice "Listo", porque sonaba a que todo había terminado.
 
 ### 8b. "Ya transferí" detiene el reloj
-**Regla propuesta (validar en la junta):** el apartado vence a las 2 horas *solo si el comprador no avisa*. Al tocar "Ya transferí", los números quedan apartados **sin límite**, hasta que Gestión marque "Ya pagó" o los libere.
+**Regla propuesta (validar en la junta):** el apartado vence a las 2 horas *solo si el comprador no avisa*. Al avisar, los números quedan apartados **sin límite**, hasta que Gestión marque "Ya pagó" o los libere.
 
 Por qué: con el reloj corriendo, alguien que pagó y avisó podía ver "Venció sin pago". Es el momento que convierte la duda de "¿será fraude?" en una acusación pública.
+
+**Avisar y mandar el comprobante son un solo toque.** El paso 2 de la hoja tiene un solo botón, "Ya transferí · mandar comprobante": marca el aviso, detiene el reloj y abre WhatsApp con el mensaje ya escrito. Antes eran dos botones: "Abrir WhatsApp" a la mitad y "Ya transferí" al final de la hoja. Quien mandaba su comprobante creía que ya había avisado, no regresaba a la página y su apartado vencía. Después de avisar, el mismo botón dice "Mandar comprobante por WhatsApp" y ya no cambia nada.
 
 - La hoja y el talón cambian a **"Aviso recibido"**, sin cuenta regresiva, y el sello del comprobante también.
 - **Fuera de horario** (antes de 9:00, después de 21:00 o en domingo), antes de apartar se avisa cuándo llegará la confirmación ("el lunes a partir de las 9:00") y que avisar detiene el reloj. El paso 3 de la hoja usa la misma hora.
@@ -106,6 +115,14 @@ Por qué: con el reloj corriendo, alguien que pagó y avisó podía ver "Venció
 **Riesgo:** alguien puede tocar "Ya transferí" sin haber pagado y bloquear números hasta que Gestión los libere. Por eso ese grupo va primero: hay que revisarlo seguido, sobre todo al abrir cada mañana. En producción conviene limitar cuántos apartados avisados puede tener un mismo WhatsApp.
 - Al cerrar, el foco del teclado regresa al botón del talón.
 - Si el navegador bloquea el almacenamiento, todo sigue funcionando mientras la página esté abierta.
+
+### 8c. Teclado y lector de pantalla
+- **La cuadrícula es una sola parada de Tab.** Las flechas se mueven por fila (decena) y columna (unidad); Inicio y Fin van al principio y al final de la fila.
+- **Las centenas son pestañas de verdad:** flechas para cambiar, una sola parada de Tab y un panel (`tabpanel`) que dice qué centena muestra.
+- **Las reglas son botones que se prenden y apagan** (`aria-pressed`), porque tocar la regla elegida la quita.
+- **La hoja de pago retiene el foco.** Lo de atrás queda `inert` y, como respaldo, el Tab da la vuelta dentro de la hoja.
+- **Cada campo dice su propio error**, con `aria-invalid` y `aria-describedby`.
+- **El sello "Ya lo tenemos" se lee en voz alta** ("Sello: ya lo tenemos desde el 3 de noviembre de 2026"). La promesa de confianza no es solo visual.
 
 ### 9. Gestión con el mismo papel
 La vista de conciliación es una lista de folios **ordenada por lo que vence primero**. El tiempo restante va en una etiqueta: contorno ámbar normalmente y rellena de rojo cuando faltan menos de 20 min. Quien concilia la usa con el banco en una mano y WhatsApp en la otra, así que:
@@ -133,8 +150,10 @@ La vista de conciliación es una lista de folios **ordenada por lo que vence pri
 | `--sello-texto` | `#B02A12` | `#FF6847` | Rojo sello para **texto chico** (sello del comprobante, errores, DESHACE). El `--sello` normal no llega a 4.5:1 sobre cartulina. |
 | `--apartado-tx` | `#85590A` | `#E3AE3A` | Ámbar para **texto** (VENCE, LIBERA en el registro). El `--apartado` es solo para rayados y contornos. |
 | `--burbuja` | `#DCF4D9` | `#1F4A3A` | Burbuja del mensaje de WhatsApp. |
+| `--vendido` | `#14223F` | `#2A3754` | Relleno de vendido. En claro es la tinta; en oscuro, un añil medio para que no brille más que lo libre. |
+| `--vendido-tx` | `#8FA3CF` | `#9BAEDB` | Número dentro de lo vendido. Añil claro, no gris (6.2:1 y 5.3:1). |
 
-**Regla de uso:** el rojo sello solo aparece en lo que es tuyo o en lo que tienes que hacer. Si todo es rojo, nada es urgente. Los avisos neutros ("El 487 ya está vendido") van en añil, no en rojo.
+**Regla de uso:** el rojo sello solo aparece en lo que es tuyo o en lo que tienes que hacer. Si todo es rojo, nada es urgente. Los avisos neutros ("El 487 ya está vendido") van en añil, no en rojo. Por eso el precio ($25) y "vendido o no" van en tinta, y "En venta" en el historial va en verde pacífico.
 
 ### Letra
 | Rol | Fuente | Por qué |

@@ -1,6 +1,6 @@
 # Plan para continuar
 
-Última actualización: 18 de noviembre de 2026 · Rama: `claude/hopeful-newton-jsbf31`
+Última actualización: 19 de noviembre de 2026 · Rama: `claude/eloquent-tesla-sgix3l`
 
 Este archivo es para retomar el trabajo en otra sesión sin repetir lo que ya se hizo. Léelo junto con [`concepto/DISENO.md`](concepto/DISENO.md), que explica cada decisión de diseño.
 
@@ -22,15 +22,16 @@ Este archivo es para retomar el trabajo en otra sesión sin repetir lo que ya se
 |---|---|---|
 | 1 | 26 / 40 | El apartado se perdía al salir a pagar (P0). El pago no decía a quién transferir (P1). Gestión actuaba sin confirmar ni deshacer (P1). |
 | 2 | 27 / 40 | "Ya transferí" no detenía el reloj (P1). Tus números se veían como de un extraño (P1). Tres contrastes bajos. |
-| 3 | **sin correr** | Es lo primero que hay que hacer: medir los cambios de la segunda vuelta. |
+| 3 | 28 / 40 | "Ya transferí" estaba separado de WhatsApp (P1 nuevo). El carrito llegaba lleno (P1). Cuadrícula invertida en oscuro, bordes débiles, teclado y lector de pantalla, talón alto (P2). |
+| 4 | **sin correr** | Es lo primero que hay que hacer: medir los cambios de la tercera vuelta. |
 
-La segunda vuelta subió solo un punto porque la revisión empieza desde cero cada vez y, con el flujo completo funcionando, encontró problemas que antes no se veían.
+Cada vuelta sube poco porque la revisión empieza desde cero y, con lo anterior resuelto, encuentra problemas que antes no se veían.
 
 ---
 
 ## Cómo retomar
 
-1. **Correr la tercera crítica** para medir lo hecho:
+1. **Correr la cuarta crítica** para medir lo hecho:
 
    ```
    /impeccable critique concepto/index.html
@@ -38,13 +39,15 @@ La segunda vuelta subió solo un punto porque la revisión empieza desde cero ca
 
    La skill pide dos revisiones independientes (diseño y detector). Ninguna debe leer `.impeccable/critique/`, para no sesgarse.
 
-2. **Elegir qué atacar** con la lista de abajo. Los P2 vienen de la segunda crítica, y la tercera puede reordenarlos.
+2. **Elegir qué atacar** con la lista de abajo. La cuarta crítica puede reordenarla.
 
-3. **Probar cada cambio** como se hizo en esta sesión:
-   - Servir la página por http, no como archivo, para que funcionen `localStorage` y el `#folio` del link: `python3 -m http.server 8766` desde la raíz del repo.
+3. **Probar cada cambio** como se hizo en estas sesiones:
+   - Servir la página por http, no como archivo, para que funcionen `localStorage` y el `#folio` del link: `python3 -m http.server 8766` desde la raíz del repo (con `run_in_background`; `nohup … &` lo bloquea el modo automático).
    - Usar Playwright (ya viene instalado en el contenedor) a 360×740, en claro y oscuro, más una pasada a 1280×900.
    - Para probar vencimientos y horario de atención, usar el reloj simulado: `page.clock.install({ time: new Date('2026-11-10T10:00:00') })` y `page.clock.fastForward('03:00:00')`.
-   - Correr el detector: `.claude/skills/impeccable/scripts/impeccable detect --json concepto/index.html`.
+   - Las celdas vendidas y apartadas tienen `aria-disabled`: Playwright no les da clic si no se pasa `{ force: true }`.
+   - Correr el detector en el código: `.claude/skills/impeccable/scripts/impeccable detect --json concepto/index.html`.
+   - Correr también el detector en el navegador: `impeccable live-server --background`, inyectar `http://localhost:PUERTO/detect.js` y leer la consola; al final, `impeccable live-server stop --keep-inject`. Encuentra cosas que el análisis del código no ve (por ejemplo, texto gris sobre color).
    - Guardar capturas y scripts en el scratchpad, nunca en el repo. Si un script de Node corre desde la raíz del repo, sus rutas relativas terminan dentro del repo.
 
 4. **Volver a publicar la página** en el mismo link. El archivo publicado no lleva `<!doctype>`, `<html>`, `<head>` ni `<body>`: se genera quitándoselos a `concepto/index.html` y se publica con la herramienta Artifact usando la URL de arriba.
@@ -53,56 +56,40 @@ La segunda vuelta subió solo un punto porque la revisión empieza desde cero ca
 
 ## Pendiente de diseño
 
-### P2 de la segunda crítica (acordados para la siguiente vuelta)
+### Lo que se corrigió después de la tercera crítica
 
-**1. El carrito llega lleno y no se explica el pago antes de pedir datos** · `/impeccable onboard`
+- **Un solo botón para avisar y mandar el comprobante.** El paso 2 dice "Ya transferí · mandar comprobante": detiene el reloj y abre WhatsApp. Ya no hay un "Ya transferí" suelto al final de la hoja.
+- **Carrito vacío al entrar.** El talón solo ofrece "Elegir mi número", que lleva a `#elige`. El boleto y el formulario dicen "Pagas por transferencia SPEI · tienes 2 h · no se cobra nada ahora". Los números elegidos se guardan en el teléfono.
+- **Color de la cuadrícula.** Hay token `--vendido` (añil medio en oscuro) y número vendido en añil claro a 6.2:1 / 5.3:1. Las celdas libres tienen borde de 1.5 px. Lo seleccionado (regla, centena) ya no usa el relleno de vendido. El precio y "vendido o no" ya no van en rojo.
+- **Teclado y lector de pantalla.** La cuadrícula y las centenas tienen una sola parada de Tab con flechas, y hay `tabpanel`. Las reglas usan `aria-pressed`. La hoja retiene el foco (`inert`). Cada campo tiene su error. Solo hay un `h1`. El sello "Ya lo tenemos" se lee en voz alta. Se quitaron los `aria-label` en `div` sin rol, y `dl.ficha` ya es válido.
+- **Talón y objetivos.** Las fichas, el selector de vista y los botones chicos miden 44 px. Con un apartado y un carrito a la vez, el talón bajó de 238 a 183 px. El aviso sale dentro del talón y dura 3.5 s. "Paga antes de" ahora es "te quedan". Un apartado vencido vuelve a ofrecer "Elegir mi número".
 
-- Al entrar ya hay una regla puesta ("Termina en 7") y dos números en el talón con "Apartar · $50". Lo marcaron las dos críticas; para alguien que se pregunta si es fraude, parece un truco.
-- El pago por transferencia SPEI no se menciona hasta después de pedir nombre y WhatsApp.
-- **Arreglo:** carrito vacío al entrar. El talón vacío lleva a `#elige`. Agregar en la portada y en el formulario: "Pagas por transferencia SPEI · tienes 2 h · no se cobra nada ahora".
-- Código: la preselección de demo está al final del script (`if (!misApartados().length) for (...) tuyos.add(n)`) y la regla inicial en `regla = 'termina'`.
+### Observaciones de la tercera crítica (siguen abiertas)
 
-**2. En modo oscuro la cuadrícula se invierte** · `/impeccable colorize`
-
-- Los vendidos quedan como lo más brillante y los libres como lo más apagado.
-- El número dentro de las celdas vendidas tiene 2.3:1 de contraste en claro y 2.0:1 en oscuro.
-- Las celdas libres tienen borde de 1 px con baja opacidad; DISENO.md promete 1.5 px de tinta para lo que se puede tocar.
-- **Arreglo:** un color propio para "vendido" en oscuro (relleno medio, no tinta), borde de 1.5 px en celdas libres, y subir el número de los vendidos a 4.5:1 u ocultarlo a propósito (la etiqueta accesible ya lo dice).
-
-**3. Teclado y lector de pantalla** · `/impeccable harden`, luego `/impeccable audit`
-
-- La cuadrícula tiene 100 paradas de Tab. Usar un solo punto de Tab con movimiento por flechas (*roving tabindex*).
-- Las pestañas de centena tienen `role="tab"` pero no responden a flechas ni tienen `tabpanel` ni `aria-controls`.
-- La hoja de pago no retiene el foco: Tab desde "Cerrar" se sale a la página.
-- Los errores del formulario usan una sola línea compartida: falta `aria-invalid` y `aria-describedby` por campo.
-- El selector Cliente/Gestión mide 30 px y las fichas de número del talón 27 px. Deberían medir 44.
-- Hay dos `h1` (premio y notas) y las notas saltan de `h1` a `h3`.
-- El sello "Ya lo tenemos" tiene `aria-hidden`, así que esa promesa de confianza no llega al lector de pantalla.
-- `.marca` tiene `aria-label` en un `div` sin rol, y `dl.ficha` mete botones dentro de sus `div`.
-
-### Observaciones menores (cuando haya tiempo)
-
-- **El talón crece hasta 200 px** (27% de la pantalla) cuando hay un apartado y un carrito al mismo tiempo, y el aviso flotante tapa filas de la cuadrícula.
-- **La hoja de pago mide unos 1,480 px.** Al volver del banco reabre arriba, y "Ya transferí" queda hasta el final.
+- **La hoja de pago mide unos 1,600 px.** El botón del paso 2 ya está a la mitad (1,030 px), pero para copiar CLABE, monto y concepto hay que ir al banco tres veces. ¿Un "copiar los tres" o un formato que el banco lea de una sola vez?
+- **El link con folio no hace nada en otro teléfono,** y no lo dice. Se resuelve con el backend (ver abajo), pero mientras tanto conviene un mensaje.
 - **El link con folio reabre la hoja en cada recarga,** incluso cuando ya está pagado.
-- **"4 cumplen · 0 libres" no sugiere nada,** y "Venció sin pago" solo ofrece "Quitar aviso", sin opción de volver a apartar.
-- **El precio de $25 va en rojo sello,** contra la regla de usar rojo solo para lo tuyo y la acción principal.
-- **La escalera "Entre más llevas, más ganas"** es lo más parecido a un casino en la página, sobre todo con "10+ regalo, por definir".
+- **"4 cumplen · 0 libres" no sugiere nada.**
+- **La escalera "Entre más llevas, más ganas"** es lo más parecido a un casino en la página, sobre todo con "10+ regalo, por definir". Una de las críticas preguntó si el 61 % vendido en la cuadrícula también se lee como presión de "ya se acaba".
+- **El talón en oscuro es una franja muy clara** (es `--tinta`, que en oscuro es casi blanco). No es un error, pero es lo más brillante de la pantalla.
 - **Gestión:**
   - Las 4 cifras en tarjetas de arriba son lo más genérico.
+  - El WhatsApp del cliente es texto: falta un link `wa.me` para escribirle desde la tarjeta.
+  - La barra de deshacer tapa la etiqueta "Por pagar".
   - No hay camino para un monto que no coincide, por ejemplo cuando alguien transfirió de menos.
   - El botón "Ya pagó" se ve igual haya avisado o no el comprador.
 - **"Trae un" y "Capicúas"** no se entienden hasta tocarlos.
 - **"Bases completas" y "Aviso de privacidad"** son texto, no links.
 - **Fuentes:** son tres familias con siete pesos desde Google Fonts. En producción conviene alojarlas y reducirlas a lo que se usa.
 - **Las notas del concepto** aparecen debajo de la app en el celular. Si se manda el link a compradores, hay que ocultarlas.
+- **Una de las críticas propone un video de 10 segundos** de uno de los cuatro con el premio ya comprado, arriba de todo, como la señal de confianza más fuerte.
 
 ### Falsos positivos conocidos del detector (no corregir)
 
-- **`cramped-padding` (12 avisos):** el detector estático no entiende `padding-block`, `max()`, `env()` ni `calc()`. En el navegador no aparecen, y se midieron uno por uno.
+- **`cramped-padding` (13 avisos):** el detector estático no entiende `padding-block`, `max()`, `env()` ni `calc()`, ni el padding de los botones dentro de `.vista`. En el navegador no aparecen.
+- **`tight-leading` (1 aviso, solo en el código):** dice "1.20x" sin línea ni elemento, y en el navegador no aparece. Ningún texto de varias líneas tiene ese interlineado.
 - **`repeating-stripes-gradient`:** el rayado de "apartado" es intencional, porque marca el estado con la forma y no solo con el color.
 - **`nested-cards`:** solo aparece en escritorio, porque ahí la app misma se dibuja como tarjeta.
-- **`hero-eyebrow-chip`:** el de las notas no es producto. El del boleto lleva datos reales (rifa #1 y combo); hay que decidir si se queda.
 
 ---
 
